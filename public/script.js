@@ -150,6 +150,14 @@ function submitQuiz(gradeLevel, longAnswer) {
             answer: answersForGrade[questionNumber]
         };
     });
+    fetch(url, {
+        method: 'POST',
+        credentials: 'include', // Include credentials for CORS
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userName, gradeLevel, answers: answersArray }),
+      })
 
     fetch(getSubmitQuizUrl(), {
         method: 'POST',

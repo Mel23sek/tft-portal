@@ -4,14 +4,21 @@ const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5500;
 
+// Enable All CORS Requests for simplicity, or configure as needed for security
+app.use(cors());
+
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// ... rest of the server.js remains unchanged
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
