@@ -1,0 +1,18 @@
+{
+    "version": 2,
+    "routes": [
+      {
+        "src": "/submit-quiz",
+        "dest": "/api/submit-quiz",
+        "methods": ["POST"]
+      },
+      {
+        "handle": "filesystem"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/"
+      }
+    ]
+  }
+  
