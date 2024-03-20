@@ -139,29 +139,30 @@ function updateLocalStorage() {
         delete window.structuredAnswers;
     }
 }
-
-
-
-// Function to submit the quiz, generate PDF, and send email
 function submitQuiz(gradeLevel, longAnswer) {
     const userName = localStorage.getItem('userName');
     let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
 
-    // Including longAnswer in structuredAnswers
+    // Including longAnswer in structuredAnswers with correct key depending on grade level
     if (longAnswer.trim() !== '') {
         if (!structuredAnswers[gradeLevel]) {
             structuredAnswers[gradeLevel] = {};
         }
+        // Correct keys based on grade level
         const longAnswerKey = gradeLevel === '5/6' ? 'longAnswer5/6' : 'longAnswer7plus';
         structuredAnswers[gradeLevel][longAnswerKey] = longAnswer;
     }
 
     // Prepare data for submission
     const answersForGrade = structuredAnswers[gradeLevel] || {};
-    const answersArray = Object.keys(answersForGrade).map(questionNumber => ({
-        questionNumber: questionNumber,
-        answer: answersForGrade[questionNumber]
-    }));
+    // Make sure to send the correct questionNumber format expected by the server
+    const answersArray = Object.keys(answersForGrade).map(questionNumber => {
+        let formattedQuestionNumber = questionNumber.replace('longAnswer', '');
+        return {
+            questionNumber: formattedQuestionNumber,
+            answer: answersForGrade[questionNumber]
+        };
+    });
 
     // Submit the data
     fetch('/submit-quiz', {
@@ -171,6 +172,8 @@ function submitQuiz(gradeLevel, longAnswer) {
         },
         body: JSON.stringify({ userName, gradeLevel, answers: answersArray }),
     })
+
+
     .then(response => {
         if (!response.ok) {
             throw new Error(`Server responded with status: ${response.status}`);
