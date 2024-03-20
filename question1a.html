@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Question 1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        main {
+            animation: popIn 1s ease-out;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden; /* Prevents scrolling caused by bubbles */
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px; /* Start bubbles from the bottom */
+            border-radius: 50%;
+            background-color: #d70026; 
+            opacity: 0.7;
+            animation: floatBubble 20s linear infinite, sideWays 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatBubble {
+            to {
+                bottom: 110%;
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes sideWays {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(20px); }
+        }
+
+        header, main {
+            position: relative; /* Ensure these elements are above the bubbles */
+            z-index: 3;
+            width: 90%;
+            max-width: 800px;
+            background-color: white;
+            box-shadow: 10px 10px 30px #d70026 ;
+            margin: 20px auto; /* Center the content */
+            padding: 20px;
+            border-radius: 10px;
+            border-style: solid;
+            border-color: #d70026;
+            border-width: thick;
+            text-align: center;
+        }
+
+        header img {
+            width: 400px;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        header h2 {
+            font-size: 2em;
+            margin: 20px 0;
+            color: #2a3c69;
+        }
+
+        header h5 {
+            font-size: 1em;
+            color: #2a3c69;
+        }
+
+        main p {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            margin-top: 20px;
+            color: #2a3c69;
+        }
+
+        form {
+            font-size: 1.2em;
+        }
+
+        form input[type="radio"], form label {
+            margin: 12px;
+            font-size: 1.2em;
+            vertical-align: middle;
+            color: #2a3c69;
+        }
+
+        form button {
+            background-color: #2a3c69; /* Updated button color */
+            color: white;
+            padding: 10px 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            color: #2a3c69;
+            position: relative; /* Ensure these elements are above the bubbles */
+            z-index: 3;
+            width: 90%;
+            max-width: 830px;
+            background-color: white;
+            box-shadow: 10px 10px 30px #d70026 ;
+            margin: 20px auto; /* Center the content */
+            padding: 5px ;
+            border-radius: 10px;
+            border-style: solid;
+            border-color: #d70026;
+            border-width: thick;
+            text-align: center;
+            vertical-align: middle;
+           
+        }
+        h3 {
+        font-size: 1.2em;
+        margin-bottom: 4px; 
+        margin-top: 10px;  
+        font-style: bold;
+    
+ }
+        h4{
+        font-size: 0.9em;
+        margin-top: 4px;
+        margin-bottom: 10px;
+        font-style: normal;
+
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="logo.jpg" alt="Company Logo" id="logo">
+        <h2>C'est quoi un mantra ?</h2>
+        <h5>(What is a mantra?)</h5>
+    </header>
+    <main>
+        <form id="question1aForm" data-current-question="1a">
+            <input type="radio" id="answer1" name="question1a" value="Une affirmation positive" onclick="selectRadio('1a', 'Une affirmation positive')">
+            <label for="answer1">Une affirmation positive</label><br>
+            <input type="radio" id="answer2" name="question1a" value="Une phrase qui se répète" onclick="selectRadio('1a', 'Une phrase qui se répète')">
+            <label for="answer2">Une phrase qui se répète</label><br>
+            <input type="radio" id="answer3" name="question1a" value="Une affirmation positive qui se répète" onclick="selectRadio('1a', 'Une affirmation positive qui se répète')">
+            <label for="answer3">Une affirmation positive qui se répète</label><br>
+            <button type="button" class="nextButton" data-current-question="1a" onclick="nextQuestion('1a')">Next</button>
+        </form>
+        
+        
+    </main>
+    <footer>
+        <h3>The French Tutor Portal</h3>
+        <h4> • Created by Melissa Sekhri • </h4>    
+    </footer>
+    <script>
+        
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            bubble.style.width = bubble.style.height = `${Math.random() * 60 + 10}px`;
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.animationDuration = `${Math.random() * 3 + 5}s`; // Duration between 5 to 8 seconds
+            bubble.style.animationName = 'floatBubble, sideWays';
+            document.body.appendChild(bubble);
+            setTimeout(() => {
+                bubble.remove();
+            }, (Math.random() * 3 + 5) * 1000); // Matches animation duration
+        }
+
+        setInterval(createBubble, 300); // Create a bubble every 300 milliseconds
+    </script>
+        <script src="script.js"></script>
+
+</body>
+</html>
