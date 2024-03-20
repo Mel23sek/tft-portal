@@ -20,8 +20,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: EMAIL_USER,
+        pass: EMAIL_PASS
     }
 });
 
@@ -66,8 +66,8 @@ app.post('/submit-quiz', (req, res) => {
 
 async function sendEmail(docName, docPath, userName) {
     const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER,
+        from: EMAIL_USER,
+        to: EMAIL_USER,
         subject: `Quiz Submission from ${userName}`,
         text: `A quiz has been submitted by ${userName}. Please find the attached PDF.`,
         attachments: [{ filename: docName, path: docPath }]
