@@ -152,7 +152,8 @@ function submitQuiz(gradeLevel, longAnswer) {
         if (!structuredAnswers[gradeLevel]) {
             structuredAnswers[gradeLevel] = {};
         }
-        structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
+        const longAnswerKey = gradeLevel === '5/6' ? 'longAnswer5/6' : 'longAnswer7plus';
+        structuredAnswers[gradeLevel][longAnswerKey] = longAnswer;
     }
 
     // Prepare data for submission
@@ -172,14 +173,14 @@ function submitQuiz(gradeLevel, longAnswer) {
     })
     .then(response => {
         if (!response.ok) {
-            // If the response is not okay, we throw an error to be caught below
             throw new Error(`Server responded with status: ${response.status}`);
         }
-        return response.json(); // If OK, parse the response body as JSON
+        return response.json();
     })
     .then(data => {
         console.log('Success:', data);
-        window.location.href = 'sub.html'; // Redirect to the submission page
+        // Redirect to the submission page
+        window.location.href = 'sub.html'; // Assuming 'sub.html' is your submission success page.
     })
     .catch((error) => {
         console.error('Error:', error);
