@@ -155,8 +155,6 @@ function submitQuiz(gradeLevel, longAnswer) {
         structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
     }
 
-    localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
-
     // Prepare data for submission
     const answersForGrade = structuredAnswers[gradeLevel] || {};
     const answersArray = Object.keys(answersForGrade).map(questionNumber => ({
@@ -173,8 +171,11 @@ function submitQuiz(gradeLevel, longAnswer) {
         body: JSON.stringify({ userName, gradeLevel, answers: answersArray }),
     })
     .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
+        if (!response.ok) {
+            // If the response is not okay, we throw an error to be caught below
+            throw new Error(`Server responded with status: ${response.status}`);
+        }
+        return response.json(); // If OK, parse the response body as JSON
     })
     .then(data => {
         console.log('Success:', data);
@@ -184,6 +185,4 @@ function submitQuiz(gradeLevel, longAnswer) {
         console.error('Error:', error);
         alert('There was a problem with your submission: ' + error.message);
     });
-   
-    
 }
