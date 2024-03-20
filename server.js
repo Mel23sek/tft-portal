@@ -9,7 +9,9 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5500;
 
-app.use(express.static(path.join(__dirname)));
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -44,7 +46,8 @@ function generateAndSendPDF(userName, gradeLevel, answers, res) {
     const docName = `Quiz_${userName.replace(/\s/g, '_')}_${Date.now()}.pdf`;
     const docPath = path.join(pdfsDir, docName);
     const doc = new PDFDocument();
-    const stream = doc.pipe(fs.createWriteStream(docPath));
+    const stream = fs.createWriteStream(docPath);
+    doc.pipe(stream);
 
     doc.fontSize(25).text('Quiz Results', { underline: true }).moveDown();
     doc.fontSize(18).text(`Name: ${userName}`).moveDown();
@@ -83,8 +86,9 @@ function sendEmail(docName, docPath, userName, res) {
     });
 }
 
+// Catch-all handler for any other GET request not handled above
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(port, () => {
