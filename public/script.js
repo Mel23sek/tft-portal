@@ -126,6 +126,7 @@ function saveAnswer(questionNumber, answer) {
     structuredAnswers[gradeLevel][questionNumber] = answer;
 }
 function submitQuiz(gradeLevel, longAnswer) {
+    const url = getSubmitQuizUrl(); // This function needs to define the URL
     const userName = localStorage.getItem('userName');
     if (!userName) {
         alert('User name is not set. Please make sure you have entered your name.');
@@ -150,14 +151,21 @@ function submitQuiz(gradeLevel, longAnswer) {
             answer: answersForGrade[questionNumber]
         };
     });
-    fetch(url, {
+    fetch(url, { // Use the url variable here
         method: 'POST',
-        credentials: 'include', // Include credentials for CORS
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({ userName, gradeLevel, answers: answersArray }),
-      })
+    })
+    .then(response => {
+        // ... existing logic
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('There was a problem with your submission: ' + error.message);
+    });
+
 
     fetch(getSubmitQuizUrl(), {
         method: 'POST',
