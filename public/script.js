@@ -1,3 +1,10 @@
+function getSubmitQuizUrl() {
+    const devUrl = 'https://cuddly-xylophone-v6prg7qqvjv73pwj-5500.app.github.dev/submit-quiz';
+    const prodUrl = 'https://tftportal.com/submit-quiz';
+    return window.location.hostname.includes('localhost') ? devUrl : prodUrl;
+}
+
+
 function cleanUpLocalStorage(validQuestionNumbers) {
     let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
     let gradeLevels = Object.keys(structuredAnswers);
@@ -80,11 +87,6 @@ function selectTeacher(gradeLevel) {
     }
 }
 
-function selectRadio(questionNumber, answer) {
-    saveAnswer(questionNumber, answer);
-    updateLocalStorage();
-}
-
 function nextButtonHandler(currentQuestion) {
     const gradeLevel = localStorage.getItem('gradeLevel');
     nextQuestion(currentQuestion, gradeLevel);
@@ -97,12 +99,14 @@ function nextQuestion(currentQuestion, gradeLevel) {
             case '1a': nextPage = 'question2a.html'; break;
             case '2a': nextPage = 'question6a.html'; break;
             case '6a': nextPage = 'sub.html'; break;
+            // Add other cases as necessary
         }
     } else if (gradeLevel === '7plus') {
         switch (currentQuestion) {
             case '1b': nextPage = 'question2b.html'; break;
             case '2b': nextPage = 'question6b.html'; break;
             case '6b': nextPage = 'sub.html'; break;
+            // Add other cases as necessary
         }
     }
 
@@ -120,16 +124,7 @@ function saveAnswer(questionNumber, answer) {
     }
 
     structuredAnswers[gradeLevel][questionNumber] = answer;
-    window.structuredAnswers = structuredAnswers;
 }
-
-function updateLocalStorage() {
-    if (window.structuredAnswers) {
-        localStorage.setItem('structuredAnswers', JSON.stringify(window.structuredAnswers));
-        delete window.structuredAnswers;
-    }
-}
-
 function submitQuiz(gradeLevel, longAnswer) {
     const userName = localStorage.getItem('userName');
     if (!userName) {
@@ -156,7 +151,7 @@ function submitQuiz(gradeLevel, longAnswer) {
         };
     });
 
-    fetch('/submit-quiz', {
+    fetch(getSubmitQuizUrl(), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
