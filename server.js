@@ -22,8 +22,12 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-app.post('/submit-quiz', (req, res) => {
-    const { userName, gradeLevel, answers } = req.body;
+function submitQuiz(gradeLevel, longAnswer) {
+    const userName = localStorage.getItem('userName');
+    if (!userName) {
+        alert('User name is not set. Please make sure you have entered your name.');
+        return; // Exit the function if userName isn't set
+    }
 
     // Check if the required fields are provided
     if (!userName || !gradeLevel || !Array.isArray(answers)) {
@@ -76,7 +80,7 @@ app.post('/submit-quiz', (req, res) => {
             res.status(500).json({ error: 'Failed to send email' });
         });
     });
-});
+
 
 async function sendEmail(docName, docPath, userName) {
     const mailOptions = {
@@ -89,10 +93,13 @@ async function sendEmail(docName, docPath, userName) {
     return transporter.sendMail(mailOptions);
 }
 
+// Catch-all handler to serve the index.html file
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
-});
+}); 
+}

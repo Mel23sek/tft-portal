@@ -141,6 +141,11 @@ function updateLocalStorage() {
 }
 function submitQuiz(gradeLevel, longAnswer) {
     const userName = localStorage.getItem('userName');
+    if (!userName) {
+        alert('User name is not set. Please make sure you have entered your name.');
+        return; // Exit the function if userName isn't set
+    }
+
     let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
 
     // Including longAnswer in structuredAnswers with correct key depending on grade level
