@@ -87,3 +87,4 @@ dist
 
 # Serverless directories
 .serverless/
+.vercel
