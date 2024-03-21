@@ -1,35 +1,21 @@
-function getSubmitQuizUrl() {
-    // Define all your production domains
-    const productionDomains = [
-        'tftportal.com',
-        'www.tftportal.com',
-        'tft-portal-mel23seks-projects.vercel.app',
-        'tft-portal-git-main-mel23seks-projects.vercel.app'
-    ];
-
-    // Check if the current domain is in the list of production domains
-    if (productionDomains.includes(window.location.hostname)) {
-        return 'https://tftportal.com/submit-quiz'; // Use the correct production URL
-    } else {
-        return 'https://cuddly-xylophone-v6prg7qqvjv73pwj-5500.app.github.dev/submit-quiz'; // Fallback for non-production
-    }
-}
-
 function cleanUpLocalStorage(validQuestionNumbers) {
     let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
     let gradeLevels = Object.keys(structuredAnswers);
-
+    
     gradeLevels.forEach(gradeLevel => {
         Object.keys(structuredAnswers[gradeLevel]).forEach(question => {
             if (!validQuestionNumbers.includes(question)) {
+                // If the key is not a valid question number, delete it
                 delete structuredAnswers[gradeLevel][question];
             }
         });
     });
-
+    
+    // Update local storage
     localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
 }
 
+// Add the list of valid question numbers
 const validQuestionNumbers = ['1a', '1b', '2a', '2b', '6a', '6b', 'longAnswer5/6', 'longAnswer7plus'];
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -38,9 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextButtons = document.querySelectorAll('.nextButton');
     const submitButton56 = document.getElementById('submitQuiz5/6');
     const submitButton7plus = document.getElementById('submitQuiz7plus');
-
+    
     cleanUpLocalStorage(validQuestionNumbers);
-
+    
     if (startForm) {
         startForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -57,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     nextButtons.forEach(button => {
         button.addEventListener('click', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent any form submission
             const currentQuestion = this.getAttribute('data-current-question');
             nextButtonHandler(currentQuestion);
         });
@@ -97,11 +83,17 @@ function selectTeacher(gradeLevel) {
     }
 }
 
+function selectRadio(questionNumber, answer) {
+    saveAnswer(questionNumber, answer);
+    // Update localStorage with the new answers right after saving
+    updateLocalStorage();
+}
+        
 function nextButtonHandler(currentQuestion) {
     const gradeLevel = localStorage.getItem('gradeLevel');
+    // No need to save the answer here; it's already done by selectRadio
     nextQuestion(currentQuestion, gradeLevel);
 }
-
 function nextQuestion(currentQuestion, gradeLevel) {
     let nextPage = '';
     if (gradeLevel === '5/6') {
@@ -109,14 +101,14 @@ function nextQuestion(currentQuestion, gradeLevel) {
             case '1a': nextPage = 'question2a.html'; break;
             case '2a': nextPage = 'question6a.html'; break;
             case '6a': nextPage = 'sub.html'; break;
-            // Add other cases as necessary
+
         }
     } else if (gradeLevel === '7plus') {
         switch (currentQuestion) {
             case '1b': nextPage = 'question2b.html'; break;
             case '2b': nextPage = 'question6b.html'; break;
             case '6b': nextPage = 'sub.html'; break;
-            // Add other cases as necessary
+
         }
     }
 
@@ -134,37 +126,46 @@ function saveAnswer(questionNumber, answer) {
     }
 
     structuredAnswers[gradeLevel][questionNumber] = answer;
-}
-function getSubmitQuizUrl() {
-    const devUrl = 'https://cuddly-xylophone-v6prg7qqvjv73pwj-5500.app.github.dev/submit-quiz';
-    const prodUrl = 'https://tftportal.com/submit-quiz';
-    return window.location.hostname.includes('localhost') ? devUrl : prodUrl;
+
+    // Save the updated structuredAnswers in the global scope to be used by updateLocalStorage
+    window.structuredAnswers = structuredAnswers;
 }
 
-function submitQuiz(gradeLevel, longAnswer) {
-    const url = getSubmitQuizUrl();
-    const userName = localStorage.getItem('userName');
-    if (!userName) {
-        alert('User name is not set. Please make sure you have entered your name.');
-        return;
+function updateLocalStorage() {
+    // Check if structuredAnswers has been set by saveAnswer
+    if (window.structuredAnswers) {
+        localStorage.setItem('structuredAnswers', JSON.stringify(window.structuredAnswers));
+        // Clear the global structuredAnswers to prevent stale data
+        delete window.structuredAnswers;
     }
+}
 
+
+
+// Function to submit the quiz, generate PDF, and send email
+function submitQuiz(gradeLevel, longAnswer) {
+    const userName = localStorage.getItem('userName');
     let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
 
+    // Including longAnswer in structuredAnswers
     if (longAnswer.trim() !== '') {
         if (!structuredAnswers[gradeLevel]) {
             structuredAnswers[gradeLevel] = {};
         }
-        const longAnswerKey = gradeLevel === '5/6' ? 'longAnswer5/6' : 'longAnswer7plus';
-        structuredAnswers[gradeLevel][longAnswerKey] = longAnswer;
+        structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
     }
 
-    const answersArray = Object.entries(structuredAnswers[gradeLevel] || {}).map(([questionNumber, answer]) => ({
-        questionNumber,
-        answer
+    localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
+
+    // Prepare data for submission
+    const answersForGrade = structuredAnswers[gradeLevel] || {};
+    const answersArray = Object.keys(answersForGrade).map(questionNumber => ({
+        questionNumber: questionNumber,
+        answer: answersForGrade[questionNumber]
     }));
 
-    fetch(url, {
+    // Submit the data
+    fetch('/submit-quiz', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -172,39 +173,17 @@ function submitQuiz(gradeLevel, longAnswer) {
         body: JSON.stringify({ userName, gradeLevel, answers: answersArray }),
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error(`Server responded with status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
     })
     .then(data => {
         console.log('Success:', data);
-        window.location.href = 'success.html';
+        window.location.href = 'sub.html'; // Redirect to the submission page
     })
     .catch((error) => {
         console.error('Error:', error);
         alert('There was a problem with your submission: ' + error.message);
     });
+   
+    
 }
-
-    fetch(getSubmitQuizUrl(), {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userName, gradeLevel, answers: answersArray }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Server responded with status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Success:', data);
-        window.location.href = 'sub.html';
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        alert('There was a problem with your submission: ' + error.message);
-    });
