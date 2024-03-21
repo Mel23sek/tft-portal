@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
@@ -11,9 +10,9 @@ const app = express();
 const port = process.env.PORT || 5500;
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -37,7 +36,7 @@ app.post('/submit-quiz', (req, res) => {
         fs.mkdirSync(pdfsDir, { recursive: true });
     }
 
-    const docName = `Quiz_${userName.replace(/\s/g, '_')}_${Date.now()}.pdf`;
+    const docName = `Quiz_${userName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
     const docPath = path.join(pdfsDir, docName);
     const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream(docPath));
@@ -49,26 +48,28 @@ app.post('/submit-quiz', (req, res) => {
     });
     doc.end();
 
-    transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER, // Replace with recipient email address if necessary
-        subject: `Quiz Submission from ${userName}`,
-        text: `A quiz has been submitted by ${userName}. Please find the attached PDF.`,
-        attachments: [{ filename: docName, path: docPath }]
-    }, (error, info) => {
-        if (error) {
-            console.error('Failed to send email:', error);
+    stream.on('finish', () => {
+        transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_USER, // Replace with recipient email address if necessary
+            subject: `Quiz Submission from ${userName}`,
+            text: `A quiz has been submitted by ${userName}. Please find the attached PDF.`,
+            attachments: [{ filename: docName, path: docPath }]
+        }, (error, info) => {
+            if (error) {
+                console.error('Failed to send email:', error);
+                fs.unlinkSync(docPath); // Clean up the PDF file
+                return res.status(500).json({ error: 'Failed to send email' });
+            }
+            console.log('Email sent: ' + info.response);
             fs.unlinkSync(docPath); // Clean up the PDF file
-            return res.status(500).json({ error: 'Failed to send email' });
-        }
-        console.log('Email sent: ' + info.response);
-        fs.unlinkSync(docPath); // Clean up the PDF file
-        res.json({ message: 'Quiz submitted and email sent successfully' });
+            res.json({ message: 'Quiz submitted and email sent successfully' });
+        });
     });
 });
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
 
 app.listen(port, () => {

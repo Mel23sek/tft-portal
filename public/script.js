@@ -1,9 +1,19 @@
 function getSubmitQuizUrl() {
-    const devUrl = 'https://cuddly-xylophone-v6prg7qqvjv73pwj-5500.app.github.dev/submit-quiz';
-    const prodUrl = 'https://tftportal.com/submit-quiz';
-    return window.location.hostname.includes('localhost') ? devUrl : prodUrl;
-}
+    // Define all your production domains
+    const productionDomains = [
+        'tftportal.com',
+        'www.tftportal.com',
+        'tft-portal-mel23seks-projects.vercel.app',
+        'tft-portal-git-main-mel23seks-projects.vercel.app'
+    ];
 
+    // Check if the current domain is in the list of production domains
+    if (productionDomains.includes(window.location.hostname)) {
+        return 'https://tftportal.com/submit-quiz'; // Use the correct production URL
+    } else {
+        return 'https://cuddly-xylophone-v6prg7qqvjv73pwj-5500.app.github.dev/submit-quiz'; // Fallback for non-production
+    }
+}
 
 function cleanUpLocalStorage(validQuestionNumbers) {
     let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};

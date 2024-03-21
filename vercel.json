@@ -2,9 +2,9 @@
     "version": 2,
     "routes": [
       {
-        "src": "/submit-quiz",
+        "src": "/api/submit-quiz",
         "methods": ["POST"],
-        "dest": "/submit-quiz"
+        "dest": "/api/submit-quiz.js"
       },
       {
         "handle": "filesystem"
