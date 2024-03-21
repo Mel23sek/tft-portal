@@ -39,12 +39,12 @@ app.post('/submit-quiz', (req, res) => {
     const docName = `Quiz_${userName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
     const docPath = path.join(pdfsDir, docName);
     const doc = new PDFDocument();
-    doc.pipe(fs.createWriteStream(docPath));
+    let stream = doc.pipe(fs.createWriteStream(docPath));
     doc.fontSize(25).text('Quiz Results', { underline: true }).moveDown();
     doc.fontSize(18).text(`Name: ${userName}`).moveDown();
     doc.text(`Grade Level: ${gradeLevel}`).moveDown();
-    answers.forEach(answer => {
-        doc.text(`Q${answer.questionNumber}: ${answer.answer}`).moveDown();
+    answers.forEach((answer, index) => {
+        doc.text(`Q${index + 1}: ${answer.answer}`).moveDown(); // Ensure that answer is structured correctly
     });
     doc.end();
 
@@ -68,10 +68,12 @@ app.post('/submit-quiz', (req, res) => {
     });
 });
 
+// Serve index.html for any unknown paths
 app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
 
+// Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
