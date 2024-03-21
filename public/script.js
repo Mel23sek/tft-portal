@@ -125,8 +125,14 @@ function saveAnswer(questionNumber, answer) {
 
     structuredAnswers[gradeLevel][questionNumber] = answer;
 }
+function getSubmitQuizUrl() {
+    const devUrl = 'https://cuddly-xylophone-v6prg7qqvjv73pwj-5500.app.github.dev/submit-quiz';
+    const prodUrl = 'https://tftportal.com/submit-quiz';
+    return window.location.hostname.includes('localhost') ? devUrl : prodUrl;
+}
+
 function submitQuiz(gradeLevel, longAnswer) {
-    const url = getSubmitQuizUrl(); // This function needs to define the URL
+    const url = getSubmitQuizUrl();
     const userName = localStorage.getItem('userName');
     if (!userName) {
         alert('User name is not set. Please make sure you have entered your name.');
@@ -143,15 +149,12 @@ function submitQuiz(gradeLevel, longAnswer) {
         structuredAnswers[gradeLevel][longAnswerKey] = longAnswer;
     }
 
-    const answersForGrade = structuredAnswers[gradeLevel] || {};
-    const answersArray = Object.keys(answersForGrade).map(questionNumber => {
-        let formattedQuestionNumber = questionNumber.replace('longAnswer', '');
-        return {
-            questionNumber: formattedQuestionNumber,
-            answer: answersForGrade[questionNumber]
-        };
-    });
-    fetch(url, { // Use the url variable here
+    const answersArray = Object.entries(structuredAnswers[gradeLevel] || {}).map(([questionNumber, answer]) => ({
+        questionNumber,
+        answer
+    }));
+
+    fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -159,13 +162,20 @@ function submitQuiz(gradeLevel, longAnswer) {
         body: JSON.stringify({ userName, gradeLevel, answers: answersArray }),
     })
     .then(response => {
-        // ... existing logic
+        if (!response.ok) {
+            throw new Error(`Server responded with status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        window.location.href = 'success.html';
     })
     .catch((error) => {
         console.error('Error:', error);
         alert('There was a problem with your submission: ' + error.message);
     });
-
+}
 
     fetch(getSubmitQuizUrl(), {
         method: 'POST',
@@ -188,4 +198,3 @@ function submitQuiz(gradeLevel, longAnswer) {
         console.error('Error:', error);
         alert('There was a problem with your submission: ' + error.message);
     });
-}

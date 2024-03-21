@@ -3,15 +3,15 @@
     "routes": [
       {
         "src": "/submit-quiz",
-        "dest": "/api/submit-quiz",
-        "methods": ["POST"]
+        "methods": ["POST"],
+        "dest": "/submit-quiz"
       },
       {
         "handle": "filesystem"
       },
       {
         "src": "/(.*)",
-        "dest": "/"
+        "dest": "/index.html"
       }
     ]
   }
