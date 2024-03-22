@@ -1,175 +1,95 @@
-function getSubmitQuizUrl() {
-    // Use the production URL directly.
-    return 'https://tftportal.com/submit-quiz';
-}
+// Assuming the user's grade selection and answers to each question are stored in localStorage
+document.addEventListener('DOMContentLoaded', () => {
 
-function cleanUpLocalStorage(validQuestionNumbers) {
-    let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
-    let gradeLevels = Object.keys(structuredAnswers);
-
-    gradeLevels.forEach(gradeLevel => {
-        Object.keys(structuredAnswers[gradeLevel]).forEach(question => {
-            if (!validQuestionNumbers.includes(question)) {
-                delete structuredAnswers[gradeLevel][question];
-            }
-        });
-    });
-
-    localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
-}
-
-const validQuestionNumbers = ['1a', '1b', '2a', '2b', '6a', '6b', 'longAnswer5/6', 'longAnswer7plus'];
-
-document.addEventListener('DOMContentLoaded', function() {
-    const startForm = document.getElementById('startQuizForm');
+    // Function to handle the grade selection
+    const selectGrade = (grade) => {
+      localStorage.setItem('selectedGrade', grade);
+      window.location.href = grade === '5/6' ? 'question1a.html' : 'question1b.html';
+    };
+  
+    // Event listeners for grade selection buttons
     const gradeButtons = document.querySelectorAll('.teacherButton');
-    const nextButtons = document.querySelectorAll('.nextButton');
-    const submitButton56 = document.getElementById('submitQuiz5/6');
-    const submitButton7plus = document.getElementById('submitQuiz7plus');
-
-    cleanUpLocalStorage(validQuestionNumbers);
-
-    if (startForm) {
-        startForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            startQuiz();
-        });
-    }
-
     gradeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const gradeLevel = this.dataset.grade;
-            selectTeacher(gradeLevel);
-        });
+      button.addEventListener('click', () => {
+        const grade = button.getAttribute('data-grade');
+        selectGrade(grade);
+      });
     });
-
-    nextButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            const currentQuestion = this.getAttribute('data-current-question');
-            nextButtonHandler(currentQuestion);
-        });
+  
+    // Function to save answer and navigate to the next question
+    const saveAnswerAndNavigate = (questionId, answerValue) => {
+      localStorage.setItem(questionId, answerValue);
+      const currentQuestionNumber = parseInt(questionId.match(/\d+/)[0], 10);
+      const questionLetter = questionId.match(/[ab]$/)[0];
+      const nextQuestionNumber = currentQuestionNumber + 1;
+      const nextQuestionId = `question${nextQuestionNumber}${questionLetter}`;
+      const nextQuestionFileName = `${nextQuestionId}.html`;
+      window.location.href = nextQuestionFileName;
+    };
+  
+    // Event listeners for answer selection and the next button
+    document.querySelectorAll('.nextButton').forEach(button => {
+      button.addEventListener('click', () => {
+        const currentQuestionId = button.getAttribute('data-current-question');
+        const selectedAnswer = document.querySelector(`input[name="${currentQuestionId}"]:checked`).value;
+        saveAnswerAndNavigate(currentQuestionId, selectedAnswer);
+      });
     });
-
-    if (submitButton56) {
-        submitButton56.addEventListener('click', function() {
-            const longAnswer = document.getElementById('longAnswer5/6').value;
-            submitQuiz('5/6', longAnswer);
+  
+    // Event listener for the final submit button
+    const submitButton = document.getElementById('submitQuiz');
+    if (submitButton) {
+      submitButton.addEventListener('click', () => {
+        const grade = localStorage.getItem('selectedGrade');
+        const answers = {};
+        for (let i = 1; i <= 6; i++) {
+          const questionIdA = `question${i}a`;
+          const questionIdB = `question${i}b`;
+          const answerA = localStorage.getItem(questionIdA);
+          const answerB = localStorage.getItem(questionIdB);
+          if (answerA) answers[questionIdA] = answerA;
+          if (answerB) answers[questionIdB] = answerB;
+        }
+        const finalAnswerId = grade === '5/6' ? 'question6a' : 'question6b';
+        const finalAnswer = document.getElementById(finalAnswerId).value;
+        if (finalAnswer) answers[finalAnswerId] = finalAnswer;
+        
+        // Replace with your actual API endpoint
+        fetch('/api/submit_quiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userName: localStorage.getItem('userName'), grade, answers })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok.');
+          }
+          return response.json();
+        })
+        .then(() => {
+          window.location.href = 'sub.html'; // Redirect to the submission page
+        })
+        .catch((error) => {
+          console.error('There was a problem with the fetch operation:', error);
         });
+      });
     }
-
-    if (submitButton7plus) {
-        submitButton7plus.addEventListener('click', function() {
-            const longAnswer = document.getElementById('longAnswer7plus').value;
-            submitQuiz('7plus', longAnswer);
-        });
-    }
-});
-
-function startQuiz() {
-    const userName = document.getElementById('userName').value.trim();
-    if (userName) {
-        localStorage.setItem('userName', userName);
-        window.location.href = 'teachers.html';
-    } else {
-        alert('Please enter your name to start the quiz.');
-    }
-}
-
-function selectTeacher(gradeLevel) {
-    localStorage.setItem('gradeLevel', gradeLevel);
-    if (gradeLevel === '5/6') {
-        window.location.href = 'question1a.html';
-    } else if (gradeLevel === '7plus') {
-        window.location.href = 'question1b.html';
-    }
-}
-
-function nextButtonHandler(currentQuestion) {
-    const gradeLevel = localStorage.getItem('gradeLevel');
-    nextQuestion(currentQuestion, gradeLevel);
-}
-
-function nextQuestion(currentQuestion, gradeLevel) {
-    let nextPage = '';
-    if (gradeLevel === '5/6') {
-        switch (currentQuestion) {
-            case '1a': nextPage = 'question2a.html'; break;
-            case '2a': nextPage = 'question6a.html'; break;
-            case '6a': nextPage = 'sub.html'; break;
-            // Add other cases as necessary
-        }
-    } else if (gradeLevel === '7plus') {
-        switch (currentQuestion) {
-            case '1b': nextPage = 'question2b.html'; break;
-            case '2b': nextPage = 'question6b.html'; break;
-            case '6b': nextPage = 'sub.html'; break;
-            // Add other cases as necessary
-        }
-    }
-
-    if (nextPage) {
-        window.location.href = nextPage;
-    }
-}
-
-function saveAnswer(questionNumber, answer) {
-    let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
-    let gradeLevel = localStorage.getItem('gradeLevel');
-
-    if (!structuredAnswers[gradeLevel]) {
-        structuredAnswers[gradeLevel] = {};
-    }
-
-    structuredAnswers[gradeLevel][questionNumber] = answer;
-}
-
-function submitQuiz(gradeLevel, longAnswer) {
-    const url = getSubmitQuizUrl(); // This function now returns the production URL.
-    const userName = localStorage.getItem('userName');
-    if (!userName) {
-        alert('User name is not set. Please make sure you have entered your name.');
-        return;
-    }
-
-    let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
-
-    if (longAnswer.trim() !== '') {
-        if (!structuredAnswers[gradeLevel]) {
-            structuredAnswers[gradeLevel] = {};
-        }
-        const longAnswerKey = gradeLevel === '5/6' ? 'longAnswer5/6' : 'longAnswer7plus';
-        structuredAnswers[gradeLevel][longAnswerKey] = longAnswer;
-    }
-
-    const answersForGrade = structuredAnswers[gradeLevel] || {};
-    const answersArray = Object.keys(answersForGrade).map(questionNumber => {
-        let formattedQuestionNumber = questionNumber.replace('longAnswer', '');
-        return {
-            questionNumber: formattedQuestionNumber,
-            answer: answersForGrade[questionNumber]
-        };
-    });
-
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userName, gradeLevel, answers: answersArray }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Server responded with status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Success:', data);
-        window.location.href = 'sub.html';
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        alert('There was a problem with your submission: ' + error.message);
-    });
-}
+  
+    // Function to create bubbles (from your provided HTML templates)
+    const createBubble = () => {
+      const bubble = document.createElement('div');
+      bubble.classList.add('bubble');
+      bubble.style.width = bubble.style.height = `${Math.random() * 60 + 10}px`;
+      bubble.style.left = `${Math.random() * 100}%`;
+      bubble.style.animationDuration = `${Math.random() * 3 + 5}s`;
+      bubble.style.animationName = 'floatBubble, sideWays';
+      document.body.appendChild(bubble);
+      setTimeout(() => {
+        bubble.remove();
+      }, (Math.random() * 3 + 5) * 1000);
+    };
+  
+    // Create a bubble every 300 milliseconds
+    setInterval(createBubble, 300);
+  });
+  
