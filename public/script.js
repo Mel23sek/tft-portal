@@ -28,40 +28,40 @@ document.addEventListener('DOMContentLoaded', function() {
   cleanUpLocalStorage(validQuestionNumbers);
   
   if (startForm) {
-      startForm.addEventListener('submit', function(event) {
-          event.preventDefault();
-          startQuiz();
-      });
-  }
+    startForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        startQuiz();
+    });
+}
 
-  gradeButtons.forEach(button => {
-      button.addEventListener('click', function() {
-          const gradeLevel = this.dataset.grade;
-          selectTeacher(gradeLevel);
-      });
-  });
+gradeButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const gradeLevel = this.dataset.grade;
+        selectTeacher(gradeLevel);
+    });
+});
 
-  nextButtons.forEach(button => {
-      button.addEventListener('click', function(event) {
-          event.preventDefault(); // Prevent any form submission
-          const currentQuestion = this.getAttribute('data-current-question');
-          nextButtonHandler(currentQuestion);
-      });
-  });
+nextButtons.forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent any form submission
+        const currentQuestion = this.getAttribute('data-current-question');
+        nextButtonHandler(currentQuestion);
+    });
+});
 
-  if (submitButton56) {
-      submitButton56.addEventListener('click', function() {
-          const longAnswer = document.getElementById('longAnswer5/6').value;
-          submitQuiz('5/6', longAnswer);
-      });
-  }
+if (submitButton56) {
+    submitButton56.addEventListener('click', function() {
+        const longAnswer = document.getElementById('longAnswer5/6').value;
+        submitQuiz('5/6', longAnswer);
+    });
+}
 
-  if (submitButton7plus) {
-      submitButton7plus.addEventListener('click', function() {
-          const longAnswer = document.getElementById('longAnswer7plus').value;
-          submitQuiz('7plus', longAnswer);
-      });
-  }
+if (submitButton7plus) {
+    submitButton7plus.addEventListener('click', function() {
+        const longAnswer = document.getElementById('longAnswer7plus').value;
+        submitQuiz('7plus', longAnswer);
+    });
+}
 });
 
 function startQuiz() {
