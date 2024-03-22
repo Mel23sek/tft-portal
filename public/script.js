@@ -155,26 +155,29 @@ function submitQuiz(gradeLevel, longAnswer) {
 
   // Prepare data for submission
   const answersForGrade = structuredAnswers[gradeLevel] || {};
-  const answersArray = Object.entries(answersForGrade).map(([questionNumber, answer]) => ({
-      questionNumber,
-      answer
-  }));
+  const submissionData = {
+    userName: userName,
+    answers: Object.entries(answersForGrade).map(([questionNumber, answer]) => ({
+        questionNumber,
+        answer
+    }))
+  };
 
   fetch(SERVERLESS_ENDPOINT, { // Using the serverless endpoint variable
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
+    body: JSON.stringify(submissionData) // Changed formData to submissionData
   })
-.then(response => {
-  if (!response.ok) throw new Error('Network response was not ok.');
-  return response.json();
-})
-.then(data => {
-  // Handle the successful submission
-  window.location.href = 'sub.html'; // Redirect to the submission confirmation page
-})
-.catch(error => {
-  // Handle any errors
-  alert('There was a problem with your submission: ' + error.message);
-});
+  .then(response => {
+    if (!response.ok) throw new Error('Network response was not ok.');
+    return response.json();
+  })
+  .then(data => {
+    // Handle the successful submission
+    window.location.href = 'sub.html'; // Redirect to the submission confirmation page
+  })
+  .catch(error => {
+    // Handle any errors
+    alert('There was a problem with your submission: ' + error.message);
+  });
 }
