@@ -11,10 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vercel/postgres": "^0.7.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.0",
+    "next.js": "^1.0.3",
     "nodemailer": "^6.9.13",
     "package-lock.json": "^1.0.0",
     "package.json": "^0.0.0",

@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
 const { PDFDocument } = require('pdf-lib');
+const { sql } = require('@vercel/postgres');
+
 require('dotenv').config();
 
 // Set up nodemailer transport using environment variables
@@ -48,12 +50,18 @@ module.exports = async (req, res) => {
     try {
         const formData = req.body;
         const pdfBytes = await generatePDF(formData);
+        const result = await sql`
+      INSERT INTO quiz_results (user_id, answers)
+      VALUES (${data.user_id}, ${data.answers})
+      RETURNING *;
+    `;
 
-        await sendEmail(pdfBytes, formData);
-
-        res.status(200).json({ message: 'Quiz submitted and email sent.' });
-    } catch (error) {
-        console.error('Error processing quiz submission:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
+    // Respond with the inserted data or a success message.
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    console.error(error);
+    // Send a server error response.
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 };
+
