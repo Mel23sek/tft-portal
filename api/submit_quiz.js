@@ -2,6 +2,18 @@ const nodemailer = require('nodemailer');
 const { PDFDocument } = require('pdf-lib');
 const { sql } = require('@vercel/postgres');
 
+
+async function createTable() {
+    await sql`
+        CREATE TABLE quiz_results (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            answers JSON NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+    `;
+}
+
 // Set up nodemailer transporter using environment variables
 const transporter = nodemailer.createTransport({
     host: "live.smtp.mailtrap.io",
