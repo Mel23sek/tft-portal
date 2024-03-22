@@ -139,7 +139,7 @@ function updateLocalStorage() {
       delete window.structuredAnswers;
   }
 }
-const SERVERLESS_ENDPOINT = 'https://cuddly-xylophone-v6prg7qqvjv73pwj-5500.app.github.dev/api/submit_quiz.js';
+const SERVERLESS_ENDPOINT = 'https://tftportal.com/api/submit_quiz.js';
 
 function submitQuiz(gradeLevel, longAnswer) {
   const userName = localStorage.getItem('userName');
