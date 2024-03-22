@@ -138,7 +138,8 @@ function updateLocalStorage() {
       // Clear the global structuredAnswers to prevent stale data
       delete window.structuredAnswers;
   }
-}const SERVERLESS_ENDPOINT = 'https://tft-portal-mel23seks-projects.vercel.app/api/submit_quiz';
+}
+const SERVERLESS_ENDPOINT = 'https://send.api.mailtrap.io/';
 
 function submitQuiz(gradeLevel, longAnswer) {
   const userName = localStorage.getItem('userName');
@@ -160,10 +161,29 @@ function submitQuiz(gradeLevel, longAnswer) {
     }))
   };
 
+  // Prepare the payload for the Mailtrap API
+  const emailPayload = {
+    from: {
+      email: "mailtrap@tftportal.com", // This should be the email you registered with on Mailtrap
+      name: "Quiz Portal", // The name that will appear as the sender
+    },
+    to: [
+      {
+        email: "tftquizportal@gmail.com", // Replace with the actual recipient's email
+      }
+    ],
+    subject: "New Quiz Submission",
+    text: `A new quiz has been submitted by ${submissionData.userName}. Details: ${JSON.stringify(submissionData, null, 2)}`,
+    // You might need to include additional fields as per Mailtrap's API requirements
+  };
+
   fetch(SERVERLESS_ENDPOINT, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(submissionData) // Send the structured submission data
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${TOKEN}` // Assuming you have a bearer token for authorization
+    },
+    body: JSON.stringify(emailPayload) // Send the structured email data
   })
   .then(response => {
     if (!response.ok) throw new Error('Network response was not ok.');
