@@ -179,13 +179,10 @@ function submitQuiz(gradeLevel, longAnswer) {
     // You might need to include additional fields as per Mailtrap's API requirements
   };
 
-  fetch(SERVERLESS_ENDPOINT, {
+  fetch('/api/submit_quiz.js', { // Call your serverless function endpoint
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${TOKEN}`
-    },
-    body: JSON.stringify(emailPayload)
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(submissionData)
   })
   .then(response => {
     if (!response.ok) throw new Error('Network response was not ok.');
