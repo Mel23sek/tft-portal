@@ -1,95 +1,104 @@
-// Assuming the user's grade selection and answers to each question are stored in localStorage
+// script.js
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Function to handle the grade selection
-    const selectGrade = (grade) => {
-      localStorage.setItem('selectedGrade', grade);
-      window.location.href = grade === '5/6' ? 'question1a.html' : 'question1b.html';
-    };
-  
-    // Event listeners for grade selection buttons
-    const gradeButtons = document.querySelectorAll('.teacherButton');
-    gradeButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const grade = button.getAttribute('data-grade');
-        selectGrade(grade);
-      });
-    });
-  
-    // Function to save answer and navigate to the next question
-    const saveAnswerAndNavigate = (questionId, answerValue) => {
-      localStorage.setItem(questionId, answerValue);
-      const currentQuestionNumber = parseInt(questionId.match(/\d+/)[0], 10);
-      const questionLetter = questionId.match(/[ab]$/)[0];
-      const nextQuestionNumber = currentQuestionNumber + 1;
-      const nextQuestionId = `question${nextQuestionNumber}${questionLetter}`;
-      const nextQuestionFileName = `${nextQuestionId}.html`;
-      window.location.href = nextQuestionFileName;
-    };
-  
-    // Event listeners for answer selection and the next button
-    document.querySelectorAll('.nextButton').forEach(button => {
-      button.addEventListener('click', () => {
-        const currentQuestionId = button.getAttribute('data-current-question');
-        const selectedAnswer = document.querySelector(`input[name="${currentQuestionId}"]:checked`).value;
-        saveAnswerAndNavigate(currentQuestionId, selectedAnswer);
-      });
-    });
-  
-    // Event listener for the final submit button
-    const submitButton = document.getElementById('submitQuiz');
-    if (submitButton) {
-      submitButton.addEventListener('click', () => {
-        const grade = localStorage.getItem('selectedGrade');
-        const answers = {};
-        for (let i = 1; i <= 6; i++) {
-          const questionIdA = `question${i}a`;
-          const questionIdB = `question${i}b`;
-          const answerA = localStorage.getItem(questionIdA);
-          const answerB = localStorage.getItem(questionIdB);
-          if (answerA) answers[questionIdA] = answerA;
-          if (answerB) answers[questionIdB] = answerB;
-        }
-        const finalAnswerId = grade === '5/6' ? 'question6a' : 'question6b';
-        const finalAnswer = document.getElementById(finalAnswerId).value;
-        if (finalAnswer) answers[finalAnswerId] = finalAnswer;
-        
-        // Replace with your actual API endpoint
-        fetch('/api/submit_quiz', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userName: localStorage.getItem('userName'), grade, answers })
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok.');
-          }
-          return response.json();
-        })
-        .then(() => {
-          window.location.href = 'sub.html'; // Redirect to the submission page
-        })
-        .catch((error) => {
-          console.error('There was a problem with the fetch operation:', error);
-        });
+    // Save the user's name upon form submission in index.html
+    const startForm = document.getElementById('startQuizForm');
+    if (startForm) {
+      startForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const userName = document.getElementById('userName').value;
+        localStorage.setItem('userName', userName);
+        window.location.href = 'teachers.html';
       });
     }
   
-    // Function to create bubbles (from your provided HTML templates)
-    const createBubble = () => {
-      const bubble = document.createElement('div');
-      bubble.classList.add('bubble');
-      bubble.style.width = bubble.style.height = `${Math.random() * 60 + 10}px`;
-      bubble.style.left = `${Math.random() * 100}%`;
-      bubble.style.animationDuration = `${Math.random() * 3 + 5}s`;
-      bubble.style.animationName = 'floatBubble, sideWays';
-      document.body.appendChild(bubble);
-      setTimeout(() => {
-        bubble.remove();
-      }, (Math.random() * 3 + 5) * 1000);
-    };
+    // Handle grade selection in teachers.html
+    const gradeButtons = document.querySelectorAll('.teacherButton');
+    gradeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const grade = button.dataset.grade;
+        localStorage.setItem('selectedGrade', grade);
+        const firstQuestion = grade === '5/6' ? 'question1a.html' : 'question1b.html';
+        window.location.href = firstQuestion;
+      });
+    });
   
-    // Create a bubble every 300 milliseconds
-    setInterval(createBubble, 300);
+    // Save answers to local storage and determine the next question
+    const nextButtons = document.querySelectorAll('.nextButton');
+    nextButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const questionId = button.dataset.currentQuestion;
+        const selectedAnswer = document.querySelector(`input[name="${questionId}"]:checked`).value;
+        localStorage.setItem(questionId, selectedAnswer);
+        const nextQuestion = determineNextQuestion(questionId);
+        if (nextQuestion) {
+          window.location.href = nextQuestion;
+        }
+      });
+    });
+  
+    // Submit the quiz and send data to the serverless API
+    const submitButtons = document.querySelectorAll('#submitQuiz5/6, #submitQuiz7plus');
+    submitButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const finalAnswerId = button.id === 'submitQuiz5/6' ? 'longAnswer5/6' : 'longAnswer7plus';
+        const finalAnswer = document.getElementById(finalAnswerId).value;
+        localStorage.setItem(finalAnswerId, finalAnswer);
+        submitQuiz();
+      });
+    });
+  
+    function determineNextQuestion(currentQuestionId) {
+      // Logic to determine the next question based on the current one and selected grade
+      const grade = localStorage.getItem('selectedGrade');
+      if (grade === '5/6' && currentQuestionId === 'question1a') {
+        return 'question2a.html';
+      } else if (grade === '5/6' && currentQuestionId === 'question2a') {
+        return 'question6a.html';
+      } else if (grade === '7plus' && currentQuestionId === 'question1b') {
+        return 'question2b.html';
+      } else if (grade === '7plus' && currentQuestionId === 'question2b') {
+        return 'question6b.html';
+      }
+      return 'sub.html'; // Default redirection if the flow reaches an end
+    }
+  
+    function submitQuiz() {
+      const userName = localStorage.getItem('userName');
+      const grade = localStorage.getItem('selectedGrade');
+      const answers = collectAllAnswers();
+  
+      fetch('/api/submit_quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userName, grade, answers })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok.');
+        return response.json();
+      })
+      .then(data => {
+        window.location.href = 'sub.html'; // Redirect to submission page
+        // Consider clearing localStorage here if the data is no longer needed
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+    }
+  
+    function collectAllAnswers() {
+      // Collect all answers for either 5/6 or 7plus based on selected grade
+      const answers = {};
+      const grade = localStorage.getItem('selectedGrade');
+      const questions = grade === '5/6' ? ['1a', '2a', '6a'] : ['1b', '2b', '6b'];
+      questions.forEach(questionId => {
+        answers[questionId] = localStorage.getItem(questionId) || '';
+      });
+      // Include long answers
+      const longAnswerId = grade === '5/6' ? 'longAnswer5/6' : 'longAnswer7plus';
+      answers[longAnswerId] = localStorage.getItem(longAnswerId) || '';
+      return answers;
+    }
   });
   
