@@ -1,15 +1,14 @@
-require('dotenv').config();
 const nodemailer = require('nodemailer');
 const { PDFDocument } = require('pdf-lib');
 const { sql } = require('@vercel/postgres');
 
-// Set up nodemailer transporter with the provided Mailtrap credentials
+// Set up nodemailer transporter using environment variables
 const transporter = nodemailer.createTransport({
     host: "live.smtp.mailtrap.io",
     port: 587,
     auth: {
-        user: "api",
-        pass: "d77630d7e5b4a8b1f81dc9c6354b7028" // Your Mailtrap password
+        user: process.env.MAILTRAP_USER, // Use the environment variable for Mailtrap user
+        pass: process.env.MAILTRAP_PASSWORD // Use the environment variable for Mailtrap password
     }
 });
 
@@ -26,8 +25,8 @@ async function generatePDF(formData) {
 
 async function sendEmail(pdfBytes, formData) {
     const mailOptions = {
-        from: 'tftquizportal@gmail.com', // Replace with your "from" email address
-        to: 'tftquizportal@gmail.com', // The recipient's email address
+        from: process.env.EMAIL_USER, // Sender address from environment variables
+        to: process.env.EMAIL_USER, // Recipient address from environment variables
         subject: 'Your Quiz Submission',
         text: 'Please find attached your quiz submission.',
         attachments: [{
