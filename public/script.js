@@ -138,7 +138,7 @@ function updateLocalStorage() {
       // Clear the global structuredAnswers to prevent stale data
       delete window.structuredAnswers;
   }
-}const SERVERLESS_ENDPOINT = 'https://tftportal.com/api/submit_quiz';
+}const SERVERLESS_ENDPOINT = 'https://tft-portal-mel23seks-projects.vercel.app/api/submitquiz';
 
 function submitQuiz(gradeLevel, longAnswer) {
   const userName = localStorage.getItem('userName');
