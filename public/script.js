@@ -139,7 +139,7 @@ function updateLocalStorage() {
       delete window.structuredAnswers;
   }
 }
-const SERVERLESS_ENDPOINT = 'https://tftportal.com/api/submit_quiz';
+const SERVERLESS_ENDPOINT = 'submit_quiz.js';
 
 function submitQuiz(gradeLevel, longAnswer) {
   const userName = localStorage.getItem('userName');
