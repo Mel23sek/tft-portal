@@ -139,6 +139,7 @@ function updateLocalStorage() {
       delete window.structuredAnswers;
   }
 }
+const SERVERLESS_ENDPOINT = 'https://api.tftportal.com/submit_quiz';
 
 function submitQuiz(gradeLevel, longAnswer) {
   const userName = localStorage.getItem('userName');
@@ -159,30 +160,21 @@ function submitQuiz(gradeLevel, longAnswer) {
       answer
   }));
 
-  // Submit the data to the serverless endpoint
-  fetch('/api/submit_quiz', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          userName,
-          gradeLevel,
-          answers: answersArray
-      }),
+  fetch(SERVERLESS_ENDPOINT, { // Using the serverless endpoint variable
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
   })
-  .then(response => {
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response.json();
-  })
-  .then(data => {
-      console.log('Success:', data);
-      window.location.href = 'sub.html'; // Redirect to the submission page
-      // Optional: Clear local storage after successful submission
-      localStorage.clear();
-  })
-  .catch((error) => {
-      console.error('Error:', error);
-      alert('There was a problem with your submission: ' + error.message);
-  });
+.then(response => {
+  if (!response.ok) throw new Error('Network response was not ok.');
+  return response.json();
+})
+.then(data => {
+  // Handle the successful submission
+  window.location.href = 'sub.html'; // Redirect to the submission confirmation page
+})
+.catch(error => {
+  // Handle any errors
+  alert('There was a problem with your submission: ' + error.message);
+});
 }
