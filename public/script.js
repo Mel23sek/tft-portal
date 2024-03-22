@@ -140,6 +140,8 @@ function updateLocalStorage() {
   }
 }
 const SERVERLESS_ENDPOINT = 'https://send.api.mailtrap.io/';
+const TOKEN = 'd77630d7e5b4a8b1f81dc9c6354b7028'; // Not recommended for client-side scripts!
+
 
 function submitQuiz(gradeLevel, longAnswer) {
   const userName = localStorage.getItem('userName');
@@ -179,11 +181,11 @@ function submitQuiz(gradeLevel, longAnswer) {
 
   fetch(SERVERLESS_ENDPOINT, {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${TOKEN}` // Assuming you have a bearer token for authorization
+      'Authorization': `Bearer ${TOKEN}`
     },
-    body: JSON.stringify(emailPayload) // Send the structured email data
+    body: JSON.stringify(emailPayload)
   })
   .then(response => {
     if (!response.ok) throw new Error('Network response was not ok.');
