@@ -152,21 +152,17 @@ function submitQuiz(gradeLevel, longAnswer) {
   }
 
   localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
+// Prepare data for submission
+const answersForGrade = structuredAnswers[gradeLevel] || {};
+const answersArray = Object.entries(answersForGrade).map(([questionNumber, answer]) => ({
+    questionNumber,
+    answer
+}));
 
-  // Prepare data for submission
-  const answersForGrade = structuredAnswers[gradeLevel] || {};
-  const submissionData = {
-    userName: userName,
-    answers: Object.entries(answersForGrade).map(([questionNumber, answer]) => ({
-        questionNumber,
-        answer
-    }))
-  };
-
-  fetch(SERVERLESS_ENDPOINT, { // Using the serverless endpoint variable
+  fetch(SERVERLESS_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(submissionData) // Changed formData to submissionData
+    body: JSON.stringify({ answers: answersArray }) // We wrap answersArray in an object
   })
   .then(response => {
     if (!response.ok) throw new Error('Network response was not ok.');
