@@ -138,8 +138,7 @@ function updateLocalStorage() {
       // Clear the global structuredAnswers to prevent stale data
       delete window.structuredAnswers;
   }
-}
-const SERVERLESS_ENDPOINT = 'https://tftportal.com/api/submit_quiz';
+}const SERVERLESS_ENDPOINT = 'https://tftportal.com/api/submit_quiz';
 
 function submitQuiz(gradeLevel, longAnswer) {
   const userName = localStorage.getItem('userName');
@@ -151,18 +150,20 @@ function submitQuiz(gradeLevel, longAnswer) {
       structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
   }
 
-  localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
-// Prepare data for submission
-const answersForGrade = structuredAnswers[gradeLevel] || {};
-const answersArray = Object.entries(answersForGrade).map(([questionNumber, answer]) => ({
-    questionNumber,
-    answer
-}));
+  // Prepare data for submission
+  const submissionData = {
+    userName, // Add userName to the data sent
+    gradeLevel, // Add gradeLevel to the data sent
+    answers: Object.entries(structuredAnswers[gradeLevel] || {}).map(([questionNumber, answer]) => ({
+      questionNumber,
+      answer
+    }))
+  };
 
   fetch(SERVERLESS_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ answers: answersArray }) // We wrap answersArray in an object
+    body: JSON.stringify(submissionData) // Send the structured submission data
   })
   .then(response => {
     if (!response.ok) throw new Error('Network response was not ok.');
