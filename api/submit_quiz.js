@@ -1,17 +1,18 @@
 const nodemailer = require('nodemailer');
 const { PDFDocument } = require('pdf-lib');
 const { sql } = require('@vercel/postgres');
+require('dotenv').config();
 
 
-// Set up nodemailer transporter using environment variables
 const transporter = nodemailer.createTransport({
-    host: "live.smtp.mailtrap.io",
-    port: 587,
+    host: process.env.MAILTRAP_SMTP_HOST,
+    port: parseInt(process.env.MAILTRAP_SMTP_PORT, 10), // Ensure this is a number
     auth: {
-        user: process.env.MAILTRAP_USER, // Use the environment variable for Mailtrap user
-        pass: process.env.MAILTRAP_PASSWORD // Use the environment variable for Mailtrap password
+        user: process.env.MAILTRAP_SMTP_USER,
+        pass: process.env.MAILTRAP_SMTP_PASS
     }
 });
+
 
 async function generatePDF(formData) {
     const pdfDoc = await PDFDocument.create();
