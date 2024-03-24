@@ -48,19 +48,18 @@ nextButtons.forEach(button => {
         nextButtonHandler(currentQuestion);
     });
 });
-
 if (submitButton56) {
-    submitButton56.addEventListener('click', function() {
-        const longAnswer = document.getElementById('longAnswer5/6').value;
-        submitQuiz('5/6', longAnswer);
-    });
+  submitButton56.addEventListener('click', function() {
+    const longAnswer = document.getElementById('longAnswer5/6').value;
+    submitQuiz('5/6', longAnswer);
+  });
 }
 
 if (submitButton7plus) {
-    submitButton7plus.addEventListener('click', function() {
-        const longAnswer = document.getElementById('longAnswer7plus').value;
-        submitQuiz('7plus', longAnswer);
-    });
+  submitButton7plus.addEventListener('click', function() {
+    const longAnswer = document.getElementById('longAnswer7plus').value;
+    submitQuiz('7plus', longAnswer);
+  });
 }
 });
 
@@ -138,42 +137,43 @@ function updateLocalStorage() {
       // Clear the global structuredAnswers to prevent stale data
       delete window.structuredAnswers;
   }
-}
+}// Generate PDF Base64
 function generatePDFBase64(answers) {
-  const doc = new jsPDF(); // Directly use new jsPDF() without destructuring
-  
+  const { jsPDF } = window.jspdf; // Make sure jsPDF is in the global scope
+  const doc = new jsPDF();
   doc.text(`Quiz Results for ${localStorage.getItem('userName')}`, 10, 10);
   answers.forEach((answer, index) => {
     doc.text(`${index + 1}. ${answer.questionNumber}: ${answer.answer}`, 10, 20 + (index * 10));
   });
-
   return doc.output('datauristring');
-
 }
-const SERVERLESS_ENDPOINT = 'https://send.api.mailtrap.io/';
-const TOKEN = 'd77630d7e5b4a8b1f81dc9c6354b7028'; // Not recommended for client-side scripts!
 
-
+// Submit Quiz Function
 function submitQuiz(gradeLevel, longAnswer) {
+  // Retrieve user's name and the structured answers from localStorage
   const userName = localStorage.getItem('userName');
   let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
 
+  // If there is a long answer, add it to the structured answers
   if (longAnswer.trim() !== '') {
-      structuredAnswers[gradeLevel] = structuredAnswers[gradeLevel] || {};
-      structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
+    structuredAnswers[gradeLevel] = structuredAnswers[gradeLevel] || {};
+    structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
   }
 
+  // Create the submission data structure
   const submissionData = {
-    userName, // Add userName to the data sent
-    gradeLevel, // Add gradeLevel to the data sent
+    userName,
+    gradeLevel,
     answers: Object.entries(structuredAnswers[gradeLevel] || {}).map(([questionNumber, answer]) => ({
       questionNumber,
       answer
     }))
   };
 
+  // Generate the base64 PDF
   const pdfBase64 = generatePDFBase64(submissionData.answers);
 
+  // Send the submission data and PDF to the serverless endpoint
   fetch('/api/submit_quiz', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -184,44 +184,9 @@ function submitQuiz(gradeLevel, longAnswer) {
     return response.json();
   })
   .then(data => {
-    window.location.href = 'sub.html'; // Redirect to the submission confirmation page
+    window.location.href = 'sub.html'; // Redirect to submission confirmation page
   })
   .catch(error => {
     alert('There was a problem with your submission: ' + error.message);
   });
 }
-
-  // Prepare the payload for the Mailtrap API
-  const emailPayload = {
-    from: {
-      email: "mailtrap@tftportal.com", // This should be the email you registered with on Mailtrap
-      name: "Quiz Portal", // The name that will appear as the sender
-    },
-    to: [
-      {
-        email: "tftquizportal@gmail.com", // Replace with the actual recipient's email
-      }
-    ],
-    subject: "New Quiz Submission",
-    text: `A new quiz has been submitted by ${submissionData.userName}. Details: ${JSON.stringify(submissionData, null, 2)}`,
-    // You might need to include additional fields as per Mailtrap's API requirements
-  };
-
-  fetch('/api/submit_quiz.js', { // Call your serverless function endpoint
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(submissionData)
-  })
-  .then(response => {
-    if (!response.ok) throw new Error('Network response was not ok.');
-    return response.json();
-  })
-  .then(data => {
-    // Handle the successful submission
-    window.location.href = 'sub.html'; // Redirect to the submission confirmation page
-  })
-  .catch(error => {
-    // Handle any errors
-    alert('There was a problem with your submission: ' + error.message);
-  });
-
