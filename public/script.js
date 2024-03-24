@@ -139,10 +139,8 @@ function updateLocalStorage() {
       delete window.structuredAnswers;
   }
 }
-
 function generatePDFBase64(answers) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const doc = new jsPDF(); // Directly use new jsPDF() without destructuring
   
   doc.text(`Quiz Results for ${localStorage.getItem('userName')}`, 10, 10);
   answers.forEach((answer, index) => {
@@ -150,6 +148,7 @@ function generatePDFBase64(answers) {
   });
 
   return doc.output('datauristring');
+
 }
 const SERVERLESS_ENDPOINT = 'https://send.api.mailtrap.io/';
 const TOKEN = 'd77630d7e5b4a8b1f81dc9c6354b7028'; // Not recommended for client-side scripts!
