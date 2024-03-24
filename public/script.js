@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const submitButton56 = document.getElementById('submitQuiz5/6');
   const submitButton7plus = document.getElementById('submitQuiz7plus');
   
+  CREATE TABLE quiz_results (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    answers JSON NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc')
+);
+
   cleanUpLocalStorage(validQuestionNumbers);
   
   if (startForm) {
