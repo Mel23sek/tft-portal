@@ -3,17 +3,6 @@ const { PDFDocument } = require('pdf-lib');
 const { sql } = require('@vercel/postgres');
 
 
-async function createTable() {
-    await sql`
-        CREATE TABLE quiz_results (
-            id SERIAL PRIMARY KEY,
-            user_id INTEGER NOT NULL,
-            answers JSON NOT NULL,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        );
-    `;
-}
-
 // Set up nodemailer transporter using environment variables
 const transporter = nodemailer.createTransport({
     host: "live.smtp.mailtrap.io",
@@ -34,44 +23,46 @@ async function generatePDF(formData) {
     });
     return pdfDoc.save();
 }
-
-async function sendEmail(pdfBytes, formData) {
-    const mailOptions = {
-        from: process.env.EMAIL_USER, // Sender address from environment variables
-        to: process.env.EMAIL_USER, // Recipient address from environment variables
-        subject: 'Your Quiz Submission',
-        text: 'Please find attached your quiz submission.',
-        attachments: [{
-            filename: 'submission.pdf',
-            content: pdfBytes,
-            contentType: 'application/pdf'
-        }]
-    };
-
-    return transporter.sendMail(mailOptions);
-}
-
 module.exports = async (req, res) => {
     if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method Not Allowed' });
+      return res.status(405).json({ message: 'Method Not Allowed' });
     }
-
+  
     try {
-        const formData = req.body;
-        const pdfBytes = await generatePDF(formData);
-
-        // Ensure that the `sql` function is properly set up for secure parameterized queries
-        const result = await sql`
-            INSERT INTO quiz_results (user_id, answers)
-            VALUES (${formData.userId}, ${JSON.stringify(formData.answers)})
-            RETURNING *;
-        `;
-
-        await sendEmail(pdfBytes, formData);
-
-        res.status(200).json({ success: true, data: result.rows[0] });
+      const formData = req.body;
+      const pdfBytes = Buffer.from(formData.pdfBase64.split('base64,')[1], 'base64');
+  
+      await sendEmail(pdfBytes, formData);
+      res.status(200).json({ success: true });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
-};
+  };
+  
+  async function sendEmail(pdfBytes, formData) {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.mailtrap.io",
+      port: 2525,
+      auth: {
+        user: process.env.MAILTRAP_USER,
+        pass: process.env.MAILTRAP_PASSWORD
+      }
+    });
+  
+    const mailOptions = {
+      from: '"Quiz Portal" <quiz-portal@example.com>',
+      to: "recipient@example.com",
+      subject: 'Quiz Submission',
+      text: 'Please find the quiz submission attached.',
+      attachments: [
+        {
+          filename: 'quiz-results.pdf',
+          content: pdfBytes,
+          contentType: 'application/pdf'
+        }
+      ]
+    };
+  
+    await transporter.sendMail(mailOptions);
+  }

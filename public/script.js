@@ -25,13 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const submitButton56 = document.getElementById('submitQuiz5/6');
   const submitButton7plus = document.getElementById('submitQuiz7plus');
   
-  CREATE TABLE quiz_results (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    answers JSON NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc')
-);
-
   cleanUpLocalStorage(validQuestionNumbers);
   
   if (startForm) {
@@ -146,6 +139,18 @@ function updateLocalStorage() {
       delete window.structuredAnswers;
   }
 }
+
+function generatePDFBase64(answers) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  doc.text(`Quiz Results for ${localStorage.getItem('userName')}`, 10, 10);
+  answers.forEach((answer, index) => {
+    doc.text(`${index + 1}. ${answer.questionNumber}: ${answer.answer}`, 10, 20 + (index * 10));
+  });
+
+  return doc.output('datauristring');
+}
 const SERVERLESS_ENDPOINT = 'https://send.api.mailtrap.io/';
 const TOKEN = 'd77630d7e5b4a8b1f81dc9c6354b7028'; // Not recommended for client-side scripts!
 
@@ -159,7 +164,13 @@ function submitQuiz(gradeLevel, longAnswer) {
       structuredAnswers[gradeLevel] = structuredAnswers[gradeLevel] || {};
       structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
   }
+  const pdfBase64 = generatePDFBase64(submissionData.answers);
 
+  fetch('/api/submit_quiz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...submissionData, pdfBase64 })
+  })
   // Prepare data for submission
   const submissionData = {
     userName, // Add userName to the data sent
