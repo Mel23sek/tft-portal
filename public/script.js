@@ -159,19 +159,11 @@ function submitQuiz(gradeLevel, longAnswer) {
   const userName = localStorage.getItem('userName');
   let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
 
-  // Including longAnswer in structuredAnswers
   if (longAnswer.trim() !== '') {
       structuredAnswers[gradeLevel] = structuredAnswers[gradeLevel] || {};
       structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
   }
-  const pdfBase64 = generatePDFBase64(submissionData.answers);
 
-  fetch('/api/submit_quiz', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...submissionData, pdfBase64 })
-  })
-  // Prepare data for submission
   const submissionData = {
     userName, // Add userName to the data sent
     gradeLevel, // Add gradeLevel to the data sent
@@ -180,6 +172,25 @@ function submitQuiz(gradeLevel, longAnswer) {
       answer
     }))
   };
+
+  const pdfBase64 = generatePDFBase64(submissionData.answers);
+
+  fetch('/api/submit_quiz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...submissionData, pdfBase64 })
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Network response was not ok.');
+    return response.json();
+  })
+  .then(data => {
+    window.location.href = 'sub.html'; // Redirect to the submission confirmation page
+  })
+  .catch(error => {
+    alert('There was a problem with your submission: ' + error.message);
+  });
+}
 
   // Prepare the payload for the Mailtrap API
   const emailPayload = {
@@ -214,4 +225,4 @@ function submitQuiz(gradeLevel, longAnswer) {
     // Handle any errors
     alert('There was a problem with your submission: ' + error.message);
   });
-}
+
