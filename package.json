@@ -2,10 +2,10 @@
   "name": "back",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "api/submit_quiz.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node api/submit_quiz.js"
   },
   "keywords": [],
   "author": "",
