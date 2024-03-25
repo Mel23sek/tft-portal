@@ -20,7 +20,7 @@ async function generatePDF(formData) {
   const page = pdfDoc.addPage();
   const text = `Name: ${formData.userName}\nGrade: ${formData.gradeLevel}\nAnswers: ${JSON.stringify(formData.answers, null, 2)}`;
   page.drawText(text, {
-    x: page.getWidth() - 50,
+    x: 50,
     y: page.getHeight() - 100,
     size: 12,
   });
