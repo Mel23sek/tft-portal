@@ -18,7 +18,7 @@ const subJSON = JSON.stringify(transporter)
 async function generatePDF(formData) {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage();
-    page.drawText(`Name: ${formData.userName}\nGrade: ${formData.gradeLevel}\nAnswers: ${JSON.stringify(formData.answers, null, 2)}`, {
+    page.drawText(`Name: ${formData.userName}\nGrade: ${formData.gradeLevel}\nAnswers: ${JSON.stringify(formData.answers, 2)}`, {
         x: 50,
         y: page.getHeight() - 100,
         size: 12,
@@ -42,17 +42,18 @@ module.exports = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+console.log($(module.exports));
 
   async function sendEmail(pdfBytes, formData) {
     const transporter = nodemailer.createTransport({
       host: "smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: process.env.MAILTRAP_USER,
-        pass: process.env.MAILTRAP_PASSWORD
+        user: process.env.MAILTRAP_SMTP_USER,
+        pass: process.env.MAILTRAP_SMTP_PASS
       }
     });
-  console.log($(transporter));
+  console.log($(sendEmail(pdfBytes, formData)));
   console.log($(mailOptions));
 
     const mailOptions = {

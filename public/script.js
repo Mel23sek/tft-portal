@@ -14,9 +14,11 @@ function cleanUpLocalStorage(validQuestionNumbers) {
   // Update local storage
   localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
 }
+console.log(cleanUpLocalStorage(validQuestionNumbers));
 
 // Add the list of valid question numbers
 const validQuestionNumbers = ['1a', '1b', '2a', '2b', '6a', '6b', 'longAnswer5/6', 'longAnswer7plus'];
+console.log(validQuestionNumbers);
 
 document.addEventListener('DOMContentLoaded', function() {
   const startForm = document.getElementById('startQuizForm');
@@ -25,6 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const submitButton56 = document.getElementById('submitQuiz5/6');
   const submitButton7plus = document.getElementById('submitQuiz7plus');
   
+  console.log(startForm);
+  console.log(gradeButtons);
+  console.log(nextButtons);
+  console.log(submitButton56);
+  console.log(submitButton7plus);
+
+
   cleanUpLocalStorage(validQuestionNumbers);
   
   if (startForm) {
@@ -77,6 +86,7 @@ function startQuiz() {
       alert('Please enter your name to start the quiz.');
   }
 }
+console.log(startQuiz());
 
 function selectTeacher(gradeLevel) {
   localStorage.setItem('gradeLevel', gradeLevel);
@@ -86,18 +96,21 @@ function selectTeacher(gradeLevel) {
       window.location.href = 'question1b.html';
   }
 }
+console.log(selectTeacher(gradeLevel));
 
 function selectRadio(questionNumber, answer) {
   saveAnswer(questionNumber, answer);
   // Update localStorage with the new answers right after saving
   updateLocalStorage();
 }
-  
+console.log(selectRadio(questionNumber, answer));
+
 function nextButtonHandler(currentQuestion) {
   const gradeLevel = localStorage.getItem('gradeLevel');
   // No need to save the answer here; it's already done by selectRadio
   nextQuestion(currentQuestion, gradeLevel);
 }
+console.log(nextButtonHandler(currentQuestion));
 
 function nextQuestion(currentQuestion, gradeLevel) {
   let nextPage = '';
@@ -121,6 +134,7 @@ function nextQuestion(currentQuestion, gradeLevel) {
       window.location.href = nextPage;
   }
 }
+console.log(nextQuestion(currentQuestion, gradeLevel));
 
 function saveAnswer(questionNumber, answer) {
   let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
@@ -135,6 +149,8 @@ function saveAnswer(questionNumber, answer) {
   // Save the updated structuredAnswers in the global scope to be used by updateLocalStorage
   window.structuredAnswers = structuredAnswers;
 }
+console.log(nextQuestion(currentQuestion, gradeLevel));
+
 function saveToLocalStorage(key, value) {
   try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -142,6 +158,9 @@ function saveToLocalStorage(key, value) {
       console.error("Error saving to local storage", e);
   }
 }
+console.log(saveToLocalStorage(key, value));
+console.log(JSON.stringify(value))
+
 function updateLocalStorage() {
   // Check if structuredAnswers has been set by saveAnswer
   if (window.structuredAnswers) {
@@ -150,6 +169,8 @@ function updateLocalStorage() {
       delete window.structuredAnswers;
   }
 }
+console.log(updateLocalStorage());
+console.log(JSON.stringify(window.structuredAnswers));
 
 
 // Submit Quiz Function
@@ -163,6 +184,8 @@ function submitQuiz(gradeLevel, longAnswer) {
     structuredAnswers[gradeLevel] = structuredAnswers[gradeLevel] || {};
     structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
   }
+  console.log(submitQuiz(gradeLevel, longAnswer));
+  console.log(JSON.parse(localStorage.getItem('structuredAnswers')));
 
   // Create the submission data structure
   const submissionData = {
