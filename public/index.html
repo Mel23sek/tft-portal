@@ -139,25 +139,8 @@
         }
     }
         @media (min-width: 768px) {
-            @keyframes popIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            60% {
-                transform: scale(1.2);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        main {
-            animation: popIn 1.5s ease-out;
-        }
-
-        body, html {
+           
+            body, html {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -206,54 +189,50 @@
         }
 
         header img {
-            width: 400px;
+            width: 550px;
             height: auto;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
-        header h2 {
+        header h1 {
+            font-size: 2.5em;
+            margin: 10px;
+            color: #2a3c69;
+        }
+
+        #introduction-text {
             font-size: 2em;
-            margin: 20px 0;
-            color: #2a3c69;
-        }
-
-        header h5 {
-            font-size: 1em;
-            color: #2a3c69;
-        }
-
-        main p {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            margin-top: 20px;
+            margin-bottom: 10px ;
             color: #2a3c69;
         }
 
         form {
-            font-size: 1.2em;
-        }
-
-        form input[type="radio"], form label {
-            margin: 12px;
-            font-size: 1.2em;
-            vertical-align: middle;
+            font-size: 1.4em;
             color: #2a3c69;
         }
 
+        form input[type="text"] {
+            padding: 10px;
+            margin: 10px;
+            border: 2px solid #2a3c69;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
         form button {
-            background-color: #2a3c69; /* Updated button color */
+            background-color: #2a3c69;
             color: white;
-            padding: 10px 15px;
-            margin-top: 15px;
+            padding: 12px 30px;
+            margin: 10px;
             border: none;
             border-radius: 5px;
-            font-size: 1.1em;
+            font-size: 1em;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         form button:hover {
-            background-color: #0056b3;
+            background-color:#d70026 ;
         }
 
         footer {
