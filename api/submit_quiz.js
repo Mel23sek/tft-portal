@@ -17,14 +17,47 @@ const transporter = nodemailer.createTransport({
 async function generatePDF(formData) {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage();
-  const text = `Name: ${formData.userName}\nGrade: ${formData.gradeLevel}\nAnswers: ${JSON.stringify(formData.answers, null, 2)}`;
-  page.drawText(text, {
+  let yPosition = page.getHeight() - 100;
+  const lineSpacing = 15; // Adjust line spacing as needed
+
+  // Draw the title
+  page.drawText('Quiz Results', {
     x: 50,
-    y: page.getHeight() - 100,
+    y: yPosition,
+    size: 25,
+  });
+  yPosition -= lineSpacing * 2; // Move down after the title
+
+  // Draw the Name
+  page.drawText(`Name: ${formData.userName}`, {
+    x: 50,
+    y: yPosition,
     size: 12,
   });
+  yPosition -= lineSpacing; // Move down
+
+  // Draw the Grade
+  page.drawText(`Grade: ${formData.gradeLevel}`, {
+    x: 50,
+    y: yPosition,
+    size: 12,
+  });
+  yPosition -= lineSpacing; // Move down
+
+  // Iterate over each answer and draw it
+  formData.answers.forEach((answer, index) => {
+    // Assuming answer is an object with questionNumber and answer properties
+    page.drawText(`Q${answer.questionNumber}: ${answer.answer}`, {
+      x: 50,
+      y: yPosition,
+      size: 12,
+    });
+    yPosition -= lineSpacing; // Move down for the next item
+  });
+
   return pdfDoc.save();
 }
+
 
 // Function to send an email with the PDF attachment
 async function sendEmail(pdfBytes, formData) {
