@@ -6,6 +6,7 @@
     <title>The French Tutor Portal - Select Your Teacher</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        @media (min-width: 768px){
         body, html {
             height: 100%;
             margin: 0;
@@ -133,7 +134,140 @@
         font-style: normal;
 
         }
+    }
 
+    @media (max-width: 767px){
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden; /* Prevents scrolling caused by bubbles */
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px; /* Start bubbles from the bottom */
+            border-radius: 50%;
+            background-color: #d70026; 
+            opacity: 0.7;
+            animation: floatBubble 20s linear infinite, sideWays 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatBubble {
+            to {
+                bottom: 110%;
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes sideWays {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(20px); }
+        }
+
+        header, main {
+            position: relative; /* Ensure these elements are above the bubbles */
+            z-index: 3;
+            width: 80%;
+            max-width: 767px;
+            background-color: white;
+            box-shadow: 10px 10px 30px #d70026 ;
+            margin: 20px auto; /* Center the content */
+            padding: 20px;
+            border-radius: 10px;
+            border-style: solid;
+            border-color: #d70026;
+            border-width: thick;
+            text-align: center;
+        }
+
+        header img {
+            width: 400px;
+            max-width: 80%;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        header h1 {
+            font-size: 1em;
+            margin: 20px 0;
+            margin-bottom: 2px;
+            color: #2a3c69;
+        }
+
+        header h2 {
+            font-size: 0.8em;
+            color: #2a3c69;
+        }
+
+        #teacher-selection-text {
+            font-size: 1em;
+            margin-bottom: 20px;
+            color: #2a3c69;
+        }
+
+        /* Adjusted button styles for larger size and specified color */
+        .teacherButton {
+            background-color: #2a3c69 ; /* Specified button color */
+            color: white;
+            padding: 30px 80px; /* Increased padding for larger buttons */
+            margin: 10px 0; /* Adjusted margin for spacing */
+            border: none;
+            border-radius: 5px;
+            font-size: 1.7em; /* Larger font size for readability */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-block; /* Adjust display for proper spacing */
+            margin-block: 40px;
+            margin-right: 20px;
+            margin-left: 20px;
+            box-shadow: 10px 10px 20px #6c88cf;
+            max-width: 80%;
+
+        }
+
+        .teacherButton:hover {
+            background-color:#d70026 ;
+        }
+
+        footer {
+            color: #2a3c69;
+            position: relative; /* Ensure these elements are above the bubbles */
+            z-index: 3;
+            width: 80%;
+            max-width: 767px;
+            background-color: white;
+            box-shadow: 10px 10px 30px #d70026 ;
+            margin: 20px auto; /* Center the content */
+            padding: 5px ;
+            border-radius: 10px;
+            border-style: solid;
+            border-color: #d70026;
+            border-width: thick;
+            text-align: center;
+            vertical-align: middle;
+           
+        }
+        h3 {
+        font-size: 0.9em;
+        margin-bottom: 4px; 
+        margin-top: 10px;  
+        font-style: bold;
+    
+ }
+        h4{
+        font-size: 0.6em;
+        margin-top: 4px;
+        margin-bottom: 10px;
+        font-style: normal;
+
+        }
+    }
+       
        
     </style>
 </head>
