@@ -13,19 +13,34 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-
-// Function to generate a PDF document from the quiz submission data
 async function generatePDF(formData) {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage();
+  
   const text = `Name: ${formData.userName}\nGrade: ${formData.gradeLevel}\nAnswers: ${JSON.stringify(formData.answers, null, 2)}`;
-  page.drawText(text, {
-    x: 50,
-    y: page.getHeight() - 100,
-    size: 12,
+  // Set the starting position for the text block
+  let yPos = page.getHeight() - 100;
+  const lines = text.split('\n');
+  const fontSize = 12;
+  const lineHeight = fontSize * 1.5;
+  
+  lines.forEach(line => {
+    // Check if the yPos is less than a certain margin at the bottom of the page
+    if (yPos < 50) {
+      page = pdfDoc.addPage(); // Add a new page if there's not enough space
+      yPos = page.getHeight() - 100; // Reset the yPos for the new page
+    }
+    page.drawText(line, {
+      x: 50,
+      y: yPos,
+      size: fontSize,
+    });
+    yPos -= lineHeight; // Move to the next line
   });
+  
   return pdfDoc.save();
 }
+
 
 // Function to send an email with the PDF attachment
 async function sendEmail(pdfBytes, formData) {
