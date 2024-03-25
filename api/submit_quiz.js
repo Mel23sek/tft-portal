@@ -4,19 +4,16 @@ const { sql } = require('@vercel/postgres');
 require('dotenv').config();
 
 
-const transporter = nodemailer.createTransport ({
-    host: process.env.MAILTRAP_SMTP_HOST,
-    port: parseInt(process.env.MAILTRAP_SMTP_PORT, 10), // Ensure this is a number
-    auth: {
-        user: process.env.MAILTRAP_SMTP_USER,
-        pass: process.env.MAILTRAP_SMTP_PASS
-    }
-    
+const transporter = nodemailer.createTransport({
+  host: process.env.MAILTRAP_SMTP_HOST,
+  port: parseInt(process.env.MAILTRAP_SMTP_PORT, 10),
+  auth: {
+      user: process.env.MAILTRAP_SMTP_USER,
+      pass: process.env.MAILTRAP_SMTP_PASS
+  }
 });
-console.log(process.env.MAILTRAP_SMTP_USER );
-console.log( process.env.MAILTRAP_SMTP_PASS);
-console.log(process.env.MAILTRAP_SMTP_HOST);
 
+const subJSON = JSON.stringify(transporter) 
 
 async function generatePDF(formData) {
     const pdfDoc = await PDFDocument.create();
@@ -28,24 +25,23 @@ async function generatePDF(formData) {
     });
     return pdfDoc.save();
 }
-console.log(generatePDF);
+console.log(generatePDF(formData));
 
 module.exports = async (req, res) => {
-    if (req.method !== 'POST') {
+  if (req.method !== 'POST') {
       return res.status(405).json({ message: 'Method Not Allowed' });
-    }
-  
-    try {
-      const formData = req.body;  
-      await sendEmail(pdfBytes, formData);
+  }
+
+  try {
+      const formData = req.body;
+      const pdfBytes = await generatePDF(formData); // Ensure this is defined and correctly generates a PDF
+      await sendEmail(pdfBytes, formData); // Ensure environment variables match
       res.status(200).json({ success: true });
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
-    }
-  };
-  console.log(sendEmail)
-  console.log(formData);
+  }
+};
 
   async function sendEmail(pdfBytes, formData) {
     const transporter = nodemailer.createTransport({
@@ -56,12 +52,12 @@ module.exports = async (req, res) => {
         pass: process.env.MAILTRAP_PASSWORD
       }
     });
-  console.log(transporter);
-  console.log(mailOptions);
-  
+  console.log($(transporter));
+  console.log($(mailOptions));
+
     const mailOptions = {
-      from: '"Quiz Portal" <quiz-portal@example.com>',
-      to: "recipient@example.com",
+      from: "tftquizportal@gmail.com",
+      to: "tftquizportal@gmail.com",
       subject: 'Quiz Submission',
       text: 'Please find the quiz submission attached.',
       attachments: [

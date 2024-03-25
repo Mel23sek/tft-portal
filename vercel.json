@@ -1,0 +1,35 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "/api/submit_quiz.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/api/$1.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/public/$1"
+      }
+    ],
+    "staticFiles": {
+      "public": "/public"
+    },
+    "env": {
+        "MAILTRAP_API_TOKEN": "d77630d7e5b4a8b1f81dc9c6354b7028",
+        "MAILTRAP_API_ENDPOINT": "https://send.api.mailtrap.io/",
+        "MAILTRAP_SMTP_USER": "api",
+        "MAILTRAP_SMTP_PASS":"d77630d7e5b4a8b1f81dc9c6354b7028",
+        "MAILTRAP_SMTP_HOST":"live.smtp.mailtrap.io",
+        "MAILTRAP_SMTP_PORT":"587"
+    },
+    "projectSettings": {
+      "projectId": "prj_P98oEerdj912E9NEFGDoetEeSHZQ",
+      "orgId": "team_ZjGdZTNJhyhaFyFrdpdAPEJD"
+    }
+  }
+  
