@@ -51,7 +51,7 @@ async function generatePDF(formData) {
     posY -= lineSpacing; // Move down for the answer
 
     // Add the answer, handle long answers with line breaks
-    const textHeight = addTextWithLineBreaks(answer, posX, posY, page.getWidth() - 2 * posX);
+    const textHeight = addTextWithLineBreaks(answer, posX, posY, page.getWidth() - 2 * posX , 2 * lineSpacing);
     posY -= textHeight + lineSpacing; // Additional space before next question
 
     // Check if we need a new page
