@@ -60,8 +60,16 @@ if (submitButton7plus) {
     const longAnswer = document.getElementById('longAnswer7plus').value;
     submitQuiz('7plus', longAnswer);
   });
+  
 }
 });
+console.log(startForm);
+console.log(gradeButtons.forEach(button));
+console.log(nextButtons.forEach(button));
+console.log(submitButton56);
+console.log(submitButton7plus);
+
+
 
 function startQuiz() {
   const userName = document.getElementById('userName').value.trim();
@@ -72,6 +80,7 @@ function startQuiz() {
       alert('Please enter your name to start the quiz.');
   }
 }
+console.log(startQuiz);
 
 function selectTeacher(gradeLevel) {
   localStorage.setItem('gradeLevel', gradeLevel);
@@ -81,18 +90,21 @@ function selectTeacher(gradeLevel) {
       window.location.href = 'question1b.html';
   }
 }
-
+console.log(selectTeacher(gradeLevel))
 function selectRadio(questionNumber, answer) {
   saveAnswer(questionNumber, answer);
   // Update localStorage with the new answers right after saving
   updateLocalStorage();
 }
-      
+console.log(selectRadio(questionNumber, answer))
+  
 function nextButtonHandler(currentQuestion) {
   const gradeLevel = localStorage.getItem('gradeLevel');
   // No need to save the answer here; it's already done by selectRadio
   nextQuestion(currentQuestion, gradeLevel);
 }
+console.log(nextButtonHandler(currentQuestion))
+
 function nextQuestion(currentQuestion, gradeLevel) {
   let nextPage = '';
   if (gradeLevel === '5/6') {
@@ -115,6 +127,7 @@ function nextQuestion(currentQuestion, gradeLevel) {
       window.location.href = nextPage;
   }
 }
+console.log(nextQuestion(currentQuestion, gradeLevel))
 
 function saveAnswer(questionNumber, answer) {
   let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
@@ -129,6 +142,7 @@ function saveAnswer(questionNumber, answer) {
   // Save the updated structuredAnswers in the global scope to be used by updateLocalStorage
   window.structuredAnswers = structuredAnswers;
 }
+console.log(saveAnswer(questionNumber, answer))
 
 function updateLocalStorage() {
   // Check if structuredAnswers has been set by saveAnswer
@@ -137,16 +151,8 @@ function updateLocalStorage() {
       // Clear the global structuredAnswers to prevent stale data
       delete window.structuredAnswers;
   }
-}// Generate PDF Base64
-function generatePDFBase64(answers) {
-  const { jsPDF } = window.jspdf; // Make sure jsPDF is in the global scope
-  const doc = new jsPDF();
-  doc.text(`Quiz Results for ${localStorage.getItem('userName')}`, 10, 10);
-  answers.forEach((answer, index) => {
-    doc.text(`${index + 1}. ${answer.questionNumber}: ${answer.answer}`, 10, 20 + (index * 10));
-  });
-  return doc.output('datauristring');
 }
+console.log(updateLocalStorage())
 
 // Submit Quiz Function
 function submitQuiz(gradeLevel, longAnswer) {
@@ -159,6 +165,7 @@ function submitQuiz(gradeLevel, longAnswer) {
     structuredAnswers[gradeLevel] = structuredAnswers[gradeLevel] || {};
     structuredAnswers[gradeLevel]['longAnswer'] = longAnswer;
   }
+  console.log(submitQuiz(gradeLevel, longAnswer))
 
   // Create the submission data structure
   const submissionData = {
@@ -169,9 +176,8 @@ function submitQuiz(gradeLevel, longAnswer) {
       answer
     }))
   };
+  console.log(submissionData)
 
-  // Generate the base64 PDF
-  const pdfBase64 = generatePDFBase64(submissionData.answers);
 
   // Send the submission data and PDF to the serverless endpoint
   fetch('/api/submit_quiz', {

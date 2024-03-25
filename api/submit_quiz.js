@@ -4,14 +4,18 @@ const { sql } = require('@vercel/postgres');
 require('dotenv').config();
 
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport ({
     host: process.env.MAILTRAP_SMTP_HOST,
     port: parseInt(process.env.MAILTRAP_SMTP_PORT, 10), // Ensure this is a number
     auth: {
         user: process.env.MAILTRAP_SMTP_USER,
         pass: process.env.MAILTRAP_SMTP_PASS
     }
+    
 });
+console.log(process.env.MAILTRAP_SMTP_USER );
+console.log( process.env.MAILTRAP_SMTP_PASS);
+console.log(process.env.MAILTRAP_SMTP_HOST);
 
 
 async function generatePDF(formData) {
@@ -24,15 +28,15 @@ async function generatePDF(formData) {
     });
     return pdfDoc.save();
 }
+console.log(generatePDF);
+
 module.exports = async (req, res) => {
     if (req.method !== 'POST') {
       return res.status(405).json({ message: 'Method Not Allowed' });
     }
   
     try {
-      const formData = req.body;
-      const pdfBytes = Buffer.from(formData.pdfBase64.split('base64,')[1], 'base64');
-  
+      const formData = req.body;  
       await sendEmail(pdfBytes, formData);
       res.status(200).json({ success: true });
     } catch (error) {
@@ -40,7 +44,9 @@ module.exports = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   };
-  
+  console.log(sendEmail)
+  console.log(formData);
+
   async function sendEmail(pdfBytes, formData) {
     const transporter = nodemailer.createTransport({
       host: "smtp.mailtrap.io",
@@ -50,6 +56,8 @@ module.exports = async (req, res) => {
         pass: process.env.MAILTRAP_PASSWORD
       }
     });
+  console.log(transporter);
+  console.log(mailOptions);
   
     const mailOptions = {
       from: '"Quiz Portal" <quiz-portal@example.com>',
