@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 async function generatePDF(formData) {
   const pdfDoc = await PDFDocument.create();
   let page = pdfDoc.addPage();
-  const fontSize = 12;
+  const fontSize = 20;
   let posY = page.getHeight() - 50; // Start 50 units from the top of the page
   const posX = 50; // Start 50 units from the left of the page
   const lineSpacing = 18; // Line spacing of 18 units
@@ -39,10 +39,10 @@ async function generatePDF(formData) {
   }
 
   // Draw name and grade at the top
-  page.drawText(`Name: ${formData.userName}`, { x: posX, y: posY, size: fontSize });
+  page.drawText(`Name: ${formData.userName}:`, { x: posX, y: posY, size: fontSize });
   posY -= lineSpacing;
-  page.drawText(`Grade: ${formData.gradeLevel}`, { x: posX, y: posY, size: fontSize });
-  posY -= 2 * lineSpacing; // Extra space before answers
+  page.drawText(`Grade: ${formData.gradeLevel}:`, { x: posX, y: posY, size: fontSize });
+  posY -= lineSpacing; 
 
   // Iterate over each answer and draw it with the question number
   for (const [question, answer] of Object.entries(formData.answers)) {
