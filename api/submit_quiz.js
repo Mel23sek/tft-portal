@@ -18,7 +18,7 @@ async function generatePDF(formData) {
   const fontSize = 12;
   let posY = page.getHeight() - 50; // Start 50 units from the top of the page
   const posX = 50; // Start 50 units from the left of the page
-  const lineSpacing = 15; // Line spacing of 18 units
+  const lineSpacing = 14; // Line spacing of 18 units
 
   // Function to add text with automatic new line after 10 words
   function addTextWithLineBreaks(text, posX, posY, maxWidth) {
@@ -52,7 +52,7 @@ async function generatePDF(formData) {
 
     // Add the answer, handle long answers with line breaks
     const textHeight = addTextWithLineBreaks(answer, posX, posY, page.getWidth() - 2 * posX , 2 * lineSpacing);
-    posY -= textHeight + 2* lineSpacing; // Additional space before next question
+    posY -= textHeight + lineSpacing; // Additional space before next question
 
     // Check if we need a new page
     if (posY < 50) {
