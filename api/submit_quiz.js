@@ -18,7 +18,7 @@ async function generatePDF(formData) {
   const fontSize = 12;
   let posY = page.getHeight() - 50; // Start 50 units from the top of the page
   const posX = 50; // Start 50 units from the left of the page
-  const lineSpacing = 10; // Line spacing of 18 units
+  const lineSpacing = 15; // Line spacing of 18 units
 
   // Function to add text with automatic new line after 10 words
   function addTextWithLineBreaks(text, posX, posY, maxWidth) {
@@ -29,7 +29,7 @@ async function generatePDF(formData) {
     words.forEach((word, index) => {
       line += word + ' ';
       if ((index + 1) % 15 === 0 || index === words.length - 1) { // Break line after every 10 words or on last word
-        page.drawText(line.trim(), { x: posX, y: posY - lineCount * lineSpacing, size: fontSize, maxWidth });
+        page.drawText(line.trim(), { x: posX, y: posY - lineCount * 3 * lineSpacing, size: fontSize, maxWidth });
         line = ''; // Reset line
         lineCount++; // Increment line count
       }
@@ -52,7 +52,7 @@ async function generatePDF(formData) {
 
     // Add the answer, handle long answers with line breaks
     const textHeight = addTextWithLineBreaks(answer, posX, posY, page.getWidth() - 2 * posX , 2 * lineSpacing);
-    posY -= textHeight + lineSpacing; // Additional space before next question
+    posY -= textHeight + 2* lineSpacing; // Additional space before next question
 
     // Check if we need a new page
     if (posY < 50) {
