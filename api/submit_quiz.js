@@ -29,7 +29,7 @@ async function generatePDF(formData) {
     words.forEach((word, index) => {
       line += word + ' ';
       if ((index + 1) % 15 === 0 || index === words.length - 1) { // Break line after every 10 words or on last word
-        page.drawText(line.trim(), { x: posX, y: posY - lineCount * 3 * lineSpacing, size: fontSize, maxWidth });
+        page.drawText(line.trim(), { x: posX, y: posY - lineCount * lineSpacing, size: fontSize, maxWidth });
         line = ''; // Reset line
         lineCount++; // Increment line count
       }
