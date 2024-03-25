@@ -65,10 +65,10 @@ async function generatePDF(formData) {
 // Function to send an email with the PDF attachment
 async function sendEmail(pdfBytes, formData) {
   const mailOptions = {
-    from: 'melissa_sekhri@tftportal.com',
+    from: 'Mel23sek@tftportal.com',
     to: process.env.EMAIL_USER, // Email sent to yourself for quiz record
-    subject: 'Quiz Submission',
-    text: 'Please find the quiz submission attached.',
+    subject: `Quiz Submission from ${formData.userName}`,
+    text: `Please find the quiz submission attached from ${formData.userName}`,
     attachments: [
       {
         filename: 'quiz-results.pdf',
