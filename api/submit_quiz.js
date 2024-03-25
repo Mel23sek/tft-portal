@@ -12,20 +12,53 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAILTRAP_SMTP_PASS
   }
 });
-
-// Function to generate a PDF document from the quiz submission data
 async function generatePDF(formData) {
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([300,400]);
-  const text = `Name: ${formData.userName}\nGrade: ${formData.gradeLevel}\nAnswers: ${JSON.stringify(formData.answers, null, 2)}`;
-  page.drawText(text, {
-    x: 50,
-    y: page.getHeight() - 100,
-    size: 12,
-  });
+  const page = pdfDoc.addPage();
+  const fontSize = 12;
+  const pageWidth = page.getWidth();
+  const pageHeight = page.getHeight();
+  const margin = 20;
+  let posY = pageHeight - 100; // Starting Y position from top
+
+  // Define maximum width for text based on page size and margins
+  const maxWidth = pageWidth - 2 * margin;
+
+  // Add the user name and grade level first
+  page.drawText(`Name: ${formData.userName}`, { x: margin, y: posY, size: fontSize });
+  posY -= fontSize * 2; // Move down the position for the next text
+  page.drawText(`Grade: ${formData.gradeLevel}`, { x: margin, y: posY, size: fontSize });
+  posY -= fontSize * 2;
+
+  // Split answers into chunks of 10 words for wrapping
+  for (const [question, answer] of Object.entries(formData.answers)) {
+    const words = answer.split(' ');
+    let line = '';
+    let wordCount = 0;
+
+    words.forEach(word => {
+      line += `${word} `;
+      wordCount++;
+
+      // After 10 words or end of the words array, draw the text and reset the line
+      if (wordCount >= 10 || word === words[words.length - 1]) {
+        page.drawText(line.trim(), { x: margin, y: posY, size: fontSize, maxWidth: maxWidth });
+        line = '';
+        wordCount = 0;
+        posY -= fontSize * 1.5; // Adjust for line height
+
+        // Add a new page if necessary
+        if (posY < margin) {
+          page = pdfDoc.addPage();
+          posY = pageHeight - margin;
+        }
+      }
+    });
+  }
+
+  // Save and return the PDF bytes
   return pdfDoc.save();
 }
-
 
 
 
