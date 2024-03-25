@@ -84,8 +84,7 @@ function submitQuiz(gradeLevel, longAnswer) {
     .then(() => window.location.href = 'sub.html')
     .catch(error => alert('There was a problem with your submission: ' + error.message));
 }
-cleanUpLocalStorage(validQuestionNumbers)
-
+console.log(cleanUpLocalStorage(validQuestionNumbers))
 // Event listeners for DOM content loaded
 document.addEventListener('DOMContentLoaded', function() {
     cleanUpLocalStorage(validQuestionNumbers);
