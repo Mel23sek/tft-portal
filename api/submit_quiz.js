@@ -13,15 +13,14 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-import { PageSizes } from 'pdf-lib';
 
 // Function to generate a PDF document from the quiz submission data
 async function generatePDF(formData) {
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage(PageSizes.Letter);
+  const page = pdfDoc.addPage();
   const text = `Name: ${formData.userName}\nGrade: ${formData.gradeLevel}\nAnswers: ${JSON.stringify(formData.answers, null, 2)}`;
   page.drawText(text, {
-    x: 50,
+    x: page.getWidth() - 50,
     y: page.getHeight() - 100,
     size: 12,
   });
