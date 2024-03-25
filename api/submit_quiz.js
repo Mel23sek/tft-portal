@@ -63,7 +63,8 @@ async function generatePDF(formData) {
 
   // Save and return the generated PDF
   return pdfDoc.save();
-}
+} 
+
 
 
 
@@ -84,7 +85,10 @@ async function sendEmail(pdfBytes, formData) {
   };
 
   return transporter.sendMail(mailOptions);
-}
+} 
+
+cleanUpLocalStorage(validQuestionNumbers)
+
 
 // Function to save quiz submission data to your database
 async function saveSubmissionToDatabase(formData) {
