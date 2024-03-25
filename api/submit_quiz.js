@@ -18,7 +18,7 @@ async function generatePDF(formData) {
   const fontSize = 12;
   let posY = page.getHeight() - 50; // Start 50 units from the top of the page
   const posX = 50; // Start 50 units from the left of the page
-  const lineSpacing = 18; // Line spacing of 18 units
+  const lineSpacing = 10; // Line spacing of 18 units
 
   // Function to add text with automatic new line after 10 words
   function addTextWithLineBreaks(text, posX, posY, maxWidth) {
@@ -28,7 +28,7 @@ async function generatePDF(formData) {
 
     words.forEach((word, index) => {
       line += word + ' ';
-      if ((index + 1) % 10 === 0 || index === words.length - 1) { // Break line after every 10 words or on last word
+      if ((index + 1) % 15 === 0 || index === words.length - 1) { // Break line after every 10 words or on last word
         page.drawText(line.trim(), { x: posX, y: posY - lineCount * lineSpacing, size: fontSize, maxWidth });
         line = ''; // Reset line
         lineCount++; // Increment line count
@@ -40,9 +40,9 @@ async function generatePDF(formData) {
 
   // Draw name and grade at the top
   page.drawText(`NAME: --- ${formData.userName} ---`, { x: posX, y: posY, size: fontSize });
-  posY -= 2 * lineSpacing;
+  posY -= 3 * lineSpacing;
   page.drawText(`GRADE: --- ${formData.gradeLevel} ---`, { x: posX, y: posY, size: fontSize });
-  posY -= 2 * lineSpacing; 
+  posY -= 3 * lineSpacing; 
 
   // Iterate over each answer and draw it with the question number
   for (const [question, answer] of Object.entries(formData.answers)) {
