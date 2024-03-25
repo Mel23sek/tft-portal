@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 });
 async function generatePDF(formData) {
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage();
+  let page = pdfDoc.addPage();
   const fontSize = 12;
   let posY = page.getHeight() - 50; // Start 50 units from the top of the page
   const posX = 50; // Start 50 units from the left of the page
