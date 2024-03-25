@@ -39,15 +39,15 @@ async function generatePDF(formData) {
   }
 
   // Draw name and grade at the top
-  page.drawText(`Name: ${formData.userName}:`, { x: posX, y: posY, size: fontSize });
+  page.drawText(`NAME: --- ${formData.userName} ---`, { x: posX, y: posY, size: fontSize });
   posY -= lineSpacing;
-  page.drawText(`Grade: ${formData.gradeLevel}:`, { x: posX, y: posY, size: fontSize });
+  page.drawText(`GRADE: --- ${formData.gradeLevel} ---`, { x: posX, y: posY, size: fontSize });
   posY -= lineSpacing; 
 
   // Iterate over each answer and draw it with the question number
   for (const [question, answer] of Object.entries(formData.answers)) {
     // Add question number
-    page.drawText(`Question ${question}:`, { x: posX, y: posY, size: fontSize });
+    page.drawText(`QUESTION ${question}:`, { x: posX, y: posY, size: fontSize });
     posY -= lineSpacing; // Move down for the answer
 
     // Add the answer, handle long answers with line breaks
