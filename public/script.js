@@ -1,5 +1,3 @@
-// Valid question numbers are pre-defined to be used across the script
-const validQuestionNumbers = ['1a', '1b', '2a', '2b', '6a', '6b', 'longAnswer5/6', 'longAnswer7plus'];
 
 // Cleans up local storage based on valid question numbers
 function cleanUpLocalStorage(validQuestionNumbers) {
@@ -13,6 +11,9 @@ function cleanUpLocalStorage(validQuestionNumbers) {
     });
     localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
 }
+
+// Valid question numbers are pre-defined to be used across the script
+const validQuestionNumbers = ['1a', '1b', '2a', '2b', '6a', '6b', 'longAnswer5/6', 'longAnswer7plus'];
 
 // Starts the quiz and navigates to the next page
 function startQuiz() {
