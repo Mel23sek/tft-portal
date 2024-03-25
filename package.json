@@ -2,7 +2,6 @@
   "name": "api",
   "version": "1.0.0",
   "description": "",
-  "main": "/api/submit_quiz.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node script.js"
@@ -18,42 +17,10 @@
     "express": "^4.19.0",
     "jspdf": "^2.5.1",
     "mailtrap": "^3.3.0",
-    "next.js": "^1.0.3",
+    "next": "^12.1.6",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.13",
-    "package-lock.json": "^1.0.0",
-    "package.json": "^0.0.0",
     "pdf-lib": "^1.17.1",
     "pdfkit": "^0.14.0"
-  },
-
-  "routes": [
-    {
-      "src": "/api/",
-      "dest": "/api/submit_quiz.js"
-    },
-    {
-      "src": "/public/",
-      "dest": "/public/script.js"
-    }
-  ],
-  "serverlessFiles" :{
-    "api" : "/api"
-  },
-  "staticFiles": {
-    "public": "/public"
-  },
-  ".env": {
-      "MAILTRAP_API_TOKEN": "d77630d7e5b4a8b1f81dc9c6354b7028",
-      "MAILTRAP_API_ENDPOINT": "https://send.api.mailtrap.io/",
-      "MAILTRAP_SMTP_USER": "api",
-      "MAILTRAP_SMTP_PASS":"d77630d7e5b4a8b1f81dc9c6354b7028",
-      "MAILTRAP_SMTP_HOST":"live.smtp.mailtrap.io",
-      "MAILTRAP_SMTP_PORT":"587"
-  },
-  "projectSettings": {
-    "projectId": "prj_P98oEerdj912E9NEFGDoetEeSHZQ",
-    "orgId": "team_ZjGdZTNJhyhaFyFrdpdAPEJD"
   }
-
 }
