@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
         startQuiz();
     });
 }
+console.log(startQuiz());
+
 
 gradeButtons.forEach(button => {
     button.addEventListener('click', function() {
@@ -63,7 +65,6 @@ if (submitButton7plus) {
   
 }
 });
-console.log(startForm);
 console.log(gradeButtons.forEach(button));
 console.log(nextButtons.forEach(button));
 console.log(submitButton56);
