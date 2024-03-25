@@ -77,7 +77,7 @@ async function sendEmail(pdfBytes, formData) {
     text: `Please find the quiz submission attached from ${formData.userName}`,
     attachments: [
       {
-        filename: 'quiz-results.pdf',
+        filename: `quiz-results from ${formData.userName} .pdf`,
         content: pdfBytes,
         contentType: 'application/pdf'
       }
@@ -87,7 +87,6 @@ async function sendEmail(pdfBytes, formData) {
   return transporter.sendMail(mailOptions);
 } 
 
-cleanUpLocalStorage(validQuestionNumbers)
 
 
 // Function to save quiz submission data to your database
@@ -122,4 +121,5 @@ module.exports = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
+  cleanUpLocalStorage(formData)
 };
