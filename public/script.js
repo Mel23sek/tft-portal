@@ -94,6 +94,7 @@ function submitQuiz(gradeLevel, longAnswer) {
         clearQuizDataFromLocalStorage(); // Clear data after successful submission
     })
     .catch(error => alert('There was a problem with your submission: ' + error.message));
+    
 }
 // Event listeners for DOM content loaded
 document.addEventListener('DOMContentLoaded', function() {
