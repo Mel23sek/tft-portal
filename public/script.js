@@ -60,8 +60,13 @@ function saveAnswer(questionNumber, answer) {
     structuredAnswers[gradeLevel][questionNumber] = answer;
     localStorage.setItem('structuredAnswers', JSON.stringify(structuredAnswers));
 }
-
+function clearQuizDataFromLocalStorage() {
+    localStorage.removeItem('userName');
+    localStorage.removeItem('gradeLevel');
+    localStorage.removeItem('structuredAnswers');
+}
 // Submits the quiz, including any long answers, to a serverless endpoint
+
 function submitQuiz(gradeLevel, longAnswer) {
     let structuredAnswers = JSON.parse(localStorage.getItem('structuredAnswers')) || {};
     if (longAnswer.trim() !== '') {
@@ -81,10 +86,12 @@ function submitQuiz(gradeLevel, longAnswer) {
         body: JSON.stringify(submissionData)
     })
     .then(response => response.json())
-    .then(() => window.location.href = 'sub.html')
+    .then(() => {
+        window.location.href = 'sub.html';
+        clearQuizDataFromLocalStorage(); // Clear data after successful submission
+    })
     .catch(error => alert('There was a problem with your submission: ' + error.message));
 }
-console.log(cleanUpLocalStorage(validQuestionNumbers))
 // Event listeners for DOM content loaded
 document.addEventListener('DOMContentLoaded', function() {
     cleanUpLocalStorage(validQuestionNumbers);
