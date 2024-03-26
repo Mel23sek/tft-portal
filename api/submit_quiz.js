@@ -26,7 +26,7 @@ async function generatePDF(formData) {
     let lineCount = 0;
 
     words.forEach((word, index) => {
-      if ((line + word).length > maxWidth || (index + 1) % 10 === 0) {
+      if ((line + word).length > maxWidth || (index + 1) % 15 === 0) {
         page.drawText(line.trim(), { x: posX, y: posY - lineCount * lineSpacing, size: fontSize });
         line = word + ' '; // Start new line with current word
         lineCount++;
