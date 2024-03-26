@@ -15,55 +15,51 @@ const transporter = nodemailer.createTransport({
 async function generatePDF(formData) {
   const pdfDoc = await PDFDocument.create();
   let page = pdfDoc.addPage();
-  const fontSize = 10;
-  let posY = page.getHeight() - 50; // Start 50 units from the top of the page
-  const posX = 50; // Start 50 units from the left of the page
-  const lineSpacing = 14; // Line spacing of 18 units
+  const fontSize = 12;
+  let posY = page.getHeight() - 50; // Start from the top
+  const posX = 50; // Start from the left
+  const lineSpacing = 14; // Set consistent line spacing
 
-  // Function to add text with automatic new line after 10 words
   function addTextWithLineBreaks(text, posX, posY, maxWidth) {
     const words = text.split(' ');
     let line = '';
     let lineCount = 0;
 
     words.forEach((word, index) => {
-      line += word + ' ';
-      if ((index + 1) % 20 === 0 || index === words.length - 1) { // Break line after every 10 words or on last word
-        page.drawText(line.trim(), { x: posX, y: posY - lineCount * 2 * lineSpacing, size: fontSize, maxWidth });
-        line = ''; // Reset line
-        lineCount++; // Increment line count
+      if ((line + word).length > maxWidth || (index + 1) % 10 === 0) {
+        page.drawText(line.trim(), { x: posX, y: posY - lineCount * lineSpacing, size: fontSize });
+        line = word + ' '; // Start new line with current word
+        lineCount++;
+      } else {
+        line += word + ' '; // Add word to current line
       }
     });
 
-    return lineCount * lineSpacing; // Return the total height taken by the text
-  }
-
-  // Draw name and grade at the top
-  page.drawText(`NAME: --- ${formData.userName} ---`, { x: posX, y: posY, size: fontSize });
-  posY -= 3 * lineSpacing;
-  page.drawText(`GRADE: --- ${formData.gradeLevel} ---`, { x: posX, y: posY, size: fontSize });
-  posY -= 3 * lineSpacing; 
-
-  // Iterate over each answer and draw it with the question number
-  for (const [question, answer] of Object.entries(formData.answers)) {
-    // Add question number
-    page.drawText(`QUESTION ${question}:`, { x: posX, y: posY, size: fontSize });
-    posY -= lineSpacing; // Move down for the answer
-
-    // Add the answer, handle long answers with line breaks
-    const textHeight = addTextWithLineBreaks(answer, posX, posY, page.getWidth() - 2 * posX , lineSpacing);
-    posY -= textHeight + 2 * lineSpacing; // Additional space before next question
-
-    // Check if we need a new page
-    if (posY < 50) {
-      page = pdfDoc.addPage();
-      posY = page.getHeight() - 50; // Reset Y position
+    if (line) {
+      page.drawText(line.trim(), { x: posX, y: posY - lineCount * lineSpacing, size: fontSize }); // Draw any remaining text
     }
+
+    return (lineCount + 1) * lineSpacing; // Return the total height used by the text
   }
 
-  // Save and return the generated PDF
-  return pdfDoc.save();
-} 
+  // Example usage with formData
+  page.drawText(`NAME: --- ${formData.userName} ---`, { x: posX, y: posY, size: fontSize });
+  posY -= 2 * lineSpacing; // Adjust position for next text
+  page.drawText(`GRADE: --- ${formData.gradeLevel} ---`, { x: posX, y: posY, size: fontSize });
+  posY -= 2 * lineSpacing;
+
+  // Iterate through formData.answers to draw each
+  Object.entries(formData.answers).forEach(([question, answer]) => {
+    posY -= addTextWithLineBreaks(`QUESTION ${question}: ${answer}`, posX, posY, 100); // Assuming maxWidth is 100, adjust as needed
+    if (posY < 50) { // Check if a new page is needed
+      page = pdfDoc.addPage();
+      posY = page.getHeight() - 50; // Reset Y position for the new page
+    }
+  });
+
+  return await pdfDoc.save();
+}
+
 
 
 
