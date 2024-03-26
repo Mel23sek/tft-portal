@@ -33,6 +33,9 @@ function selectTeacher(gradeLevel) {
     window.location.href = gradeLevel === '5/6' ? 'question1a.html' : 'question1b.html';
 }
 
+function selectRadio(questionNumber, answer) {
+    saveAnswer(questionNumber, answer);
+}
 // Handles the action when the next button is clicked
 function nextButtonHandler(currentQuestion) {
     const gradeLevel = localStorage.getItem('gradeLevel');
@@ -50,6 +53,7 @@ function getNextPage(currentQuestion, gradeLevel) {
     };
     return pageMap[gradeLevel]?.[currentQuestion] || '';
 }
+
 
 // Saves an answer to a question in local storage
 function saveAnswer(questionNumber, answer) {
