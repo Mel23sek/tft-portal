@@ -1,4 +1,4 @@
-clearQuizDataFromLocalStorage();
+console.log(clearQuizDataFromLocalStorage());
 
 // Valid question numbers are pre-defined to be used across the script
 const validQuestionNumbers = ['1a', '1b', '2a', '2b', '6a', '6b', 'longAnswer5/6', 'longAnswer7plus'];
@@ -66,6 +66,7 @@ function clearQuizDataFromLocalStorage() {
     localStorage.removeItem('userName');
     localStorage.removeItem('gradeLevel');
     localStorage.removeItem('structuredAnswers');
+    localStorage.removeItem('validQuestionNumbers')
 }
 
 // Submits the quiz, including any long answers, to a serverless endpoint
