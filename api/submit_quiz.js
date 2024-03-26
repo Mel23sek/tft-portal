@@ -18,7 +18,7 @@ async function generatePDF(formData) {
   const fontSize = 12;
   let posY = page.getHeight() - 50; // Start from the top
   const posX = 50; // Start from the left
-  const lineSpacing = 20; // Set consistent line spacing
+  const lineSpacing = 18; // Set consistent line spacing
 
   function addTextWithLineBreaks(text, posX, posY, maxWidth) {
     const words = text.split(' ');
@@ -44,13 +44,13 @@ async function generatePDF(formData) {
 
   // Example usage with formData
   page.drawText(`NAME: --- ${formData.userName} ---`, { x: posX, y: posY, size: fontSize });
-  posY -= lineSpacing; // Adjust position for next text
+  posY -= 2 * lineSpacing; // Adjust position for next text
   page.drawText(`GRADE: --- ${formData.gradeLevel} ---`, { x: posX, y: posY, size: fontSize });
-  posY -=  lineSpacing;
+  posY -= 2 * lineSpacing;
 
   // Iterate through formData.answers to draw each
   Object.entries(formData.answers).forEach(([question, answer]) => {
-    posY -= addTextWithLineBreaks(`QUESTION ${question}: --- ${answer} ---`, posX, posY, 100); // Assuming maxWidth is 100, adjust as needed
+    posY -= 2 * lineSpacing ; addTextWithLineBreaks(`QUESTION ${question}: --- ${answer} ---`, posX, posY, 100); // Assuming maxWidth is 100, adjust as needed
     if (posY < 50) { // Check if a new page is needed
       page = pdfDoc.addPage();
       posY = page.getHeight() - 50; // Reset Y position for the new page
